@@ -35,7 +35,7 @@ Here are some ways parents can work with their children to improve expressive la
    - Storytelling: Ask your child to tell stories, make up their own stories, or act out stories. If your child is having trouble, help them break down the timeline and sequence of events (i.e. “what happened first”). Children continue to develop narrative language skills throughout childhood. Stories become more elaborate and detailed as children get older.
 
 ## Now how all these are gonna be implemented 
- - phonic sounds : each letter will be spelled out loud as in they must be pictorial depicted and voice-activated at the same time.
+ - Phonic sounds : each letter will be spelled out loud as in they must be pictorial depicted and voice-activated at the same time.
  - Pictorial representations: kids tend to get attracted towards bright colors , hence every letters should be represented in such way.
 ### How Different Colors Affect Mood and Behavior
  - Red: Often associated with energy and passion, red can stimulate and excite children. However, it’s important to use this color sparingly as it can also lead to feelings of frustration or anger.
@@ -52,17 +52,17 @@ Here are some ways parents can work with their children to improve expressive la
  - The more the child completes a quest the more reward it gets.
  - Parents also can moniter of what the child is learning and be a extra help.
  - Since the app has grade system its not only for childrens at the same time it is also for childrens who can when they can't when they reach a certain age. So speach therapy can also be implemented , kids with autisim have less brighten color palets and remove unwanted music or sounds in order to keep them calm and concerntrated . kids suffering from dyslexia can also be utilize the app by using repetative class with concerned help. 
- - speed range for reading as in slow pronounciation inorder to resiprocate it 
- - interactive app where kids can be encouraged at every level.
+ - Speed range for reading as in slow pronounciation inorder to resiprocate it 
+ - Interactive app where kids can be encouraged at every level.
  - The app will have 3 stages same as the story chapters like phonics,words and sentences 
  
  
 ## What should we work on 
  The simple view of reading is languge comprehension and word recognition. Hence the kid must know what the word is before knowing what it means so language comprehension is not required for kids therefore when it comes to word recongnition the kids must be able to do three things:
-        -> Phonics
-        -> Decoding which the ability to sound out words children have heard before but haven’t seen written out. This is a vital step in the reading process as it forms the foundation for other reading skills.
-        -> Sight recognition where if the child sees a ball the child must know it is a ball.
-        -> 
+- Phonic sounds
+- Decoding which the ability to sound out words children have heard before but haven’t seen written out. This is a vital step in the reading process as it forms the foundation for other reading skills.
+- Sight recognition where if the child sees a ball the child must know it is a ball.
+         
 
 ## How the app is going to be 
  The app can be can have work flow of two stories where 1 is for boys and n other is for girls 
