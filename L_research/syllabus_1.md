@@ -1,4 +1,4 @@
-## Baby Learning App Syllabus (0-12 Months)
+## Baby Learning App Syllabus (3-12 Months)
 ## Level 1: Sound Recognition & Response (0-3 Months)
 ### Week 1-2: Voice & Sound Recognition
 ## Learning Objective: Baby recognizes and responds to sounds

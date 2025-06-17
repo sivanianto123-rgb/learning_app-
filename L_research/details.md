@@ -1,8 +1,8 @@
 ### Languages 
 
-There are two types of languages
-  -> Receptive language - understanding skills 
-  -> Expressive language - talking skills 
+There are two types of languages:
+-  Receptive language - understanding skills 
+-  Expressive language - talking skills 
 These are the method for speach therapy where 
 
 ## Receptive language :
