@@ -1,9 +1,10 @@
 ## Interactive bot guide
+
  ### Charecteristics 
   - Gentle and expressive eyes.
   - It gives and heads-up to the parents on how the app is going to be.
   - Adapts speech patterns to baby's developmental stage
-## Level 1: Sound Recognition & Response (3 Months)
+## Level 1: Sound Recognition & Response (6 Months)
 ### Week 1-2: Voice & Sound Recognition
 #### Module 1.1: Animated Letter Songs
 #### Duration: 3-5 minutes per session
