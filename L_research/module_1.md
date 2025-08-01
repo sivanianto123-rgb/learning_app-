@@ -1,18 +1,4 @@
 # Level 1: Sound Recognition & Production (6 Months)
-
-### What is this module about?
-This module introduces 6-month-old babies to basic sound production and recognition through interactiveexperiences. The module focuses on the fundamental sounds that babies naturally develop at this stage: "ba", "ma", "da", "ga" and basic vowel sounds "ah", "oh", "ee".
-
-### What can you learn from this module?
-By completing this module, babies will:
-
-- Produce basic consonant-vowel combinations (ba, ma, da, ga)
-- Understand cause-and-effect relationships (voice creates visual responses)
-- Develop sound-visual association skills
-- Increase vocalization frequency and confidence
-- Build foundation for future speech development
-
-
 ## Course Outline
 ### Week 1-2: Foundation Sounds
 
@@ -35,15 +21,11 @@ By completing this module, babies will:
 - Lesson 3.3: Rhythm 
 - Lesson 3.4: Free Sound Exploration
 
-
-
 ## When to Study
 
 - Best times: When baby is alert but not hungry (mid-morning, mid-afternoon)
 - Avoid: Feeding time, sleep time, fussy periods
 - Duration: Maximum 3 minutes per session
-- Frequency: 2-3 sessions per day with 2+ hour breaks
-
 
 ### This curriculum follows the natural progression of baby sound development:
 
