@@ -39,7 +39,7 @@
 - Gentle sound volume that increases slightly when baby responds
 
 #### Week 3-4: Visual-Audio Connection
-##### Module 1.3: Shape & Sound Matching
+#### Module 1.3: Shape & Sound Matching
 #### Duration: 4-6 minutes per session
 #### Content:
 
