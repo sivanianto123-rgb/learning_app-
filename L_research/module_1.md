@@ -33,7 +33,7 @@
 - Single sounds → Sound combinations
 
 ## Lesson 1.1: "Ba" Sound Introduction and Practice
-** Sound Target: "Ba" **
+**Sound Target: "Ba"**
 ** Duration: 2-3 minutes **
 ** Learning Goal: Introduce and encourage "ba" sound production **
 
@@ -320,4 +320,16 @@ Learning Goal: Independent sound creativity and mastery **
 - Buddy's Role: Shows pride in baby's progress
 - Graduation: Ready for next developmental level
 
+
+## THE APP FEATURES 
+- 1 Splash screen 
+- 1 On-boarding 
+- login and register for the parents email and phone number.
+- The first level of the module has three levels where each have 3 segments each . So each levels are going to be named after a cartoon . each level is going to be represented as complete cartoon collection.
+- The app is going to be interactive throughout the end in order to keep the baby engaged through out the session.
+- The course needs 15 per session , the shorter the conversations are more the baby concerntrates.
+- Followed by this the app is gonna have an profile for the baby and a progeress report classified into 3 categories like course completion, fluency , goal.
+- bottom nav bar is gonna have a home, settings, profile and collections.
+- home its has a map where each session is conducted , collections is gonna have the cartoon collectables from each level.
+- 
 
