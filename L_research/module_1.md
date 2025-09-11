@@ -37,12 +37,15 @@
 ## Lesson 1.1: "Ba" Sound Introduction and Practice
 
 **Sound Target: "Ba"**
-** Duration: 2-3 minutes **
-** Learning Goal: Introduce and encourage "ba" sound production **
+
+**Duration: 2-3 minutes**
+
+**Learning Goal: Introduce and encourage "ba" sound production**
 
 ### Lesson Structure:
 
-**Phase 1**: Sound Introduction (30 seconds) - Buddy's Role: Demonstrates clear "ba" sound 3 times - Visual Element: Large circle appears with each "ba" - Baby's Job: Listen and observe
+**Phase 1**: Sound Introduction (30 seconds) - Buddy's Role: Demonstrates clear "ba" sound 3 times  
+ - Visual Element: Large circle appears with each "ba" - Baby's Job: Listen and observe
 
 **Phase 2**: Encouraged Practice (90 seconds) - Sound Trigger: Any sound containing "b" phoneme - Visual Response: Circle grows larger and changes color - Audio Feedback: Gentle chime reinforces attempt
 
@@ -55,8 +58,11 @@
 - Move to next lesson when baby consistently produces "ba" sound
 
 **Lesson 1.2: "Ma" Sound Recognition and Production**
+
 **Sound Target: "Ma"**
+
 **Duration: 2-3 minutes**
+
 **Learning Goal: Develop "ma" sound through emotional connection**
 
 ### Lesson Structure:
@@ -65,27 +71,30 @@
 
 **Phase 2**: Interactive Practice (90 seconds)
 
-- Sound Trigger: Any "m" sound attempts
-- Visual Response: Heart grows and glows
-- Special Feature: Buddy shows extra excitement for "ma" sounds
-- Success Marker: "Ma", "muh", or clear "m" sound
+    - Sound Trigger: Any "m" sound attempts
+    - Visual Response: Heart grows and glows
+    - Special Feature: Buddy shows extra excitement for "ma" sounds
+    - Success Marker: "Ma", "muh", or clear "m" sound
 
 **Phase 3**: Family Connection (30 seconds)
 
-- Achievement: Multiple hearts float across screen
-- Audio: Gentle "mama loves you" melody
-- Purpose: Connects sound learning to family bond
+    - Achievement: Multiple hearts float across screen
+    - Audio: Gentle "mama loves you" melody
+    - Purpose: Connects sound learning to family bond
 
 **Lesson 1.3: "Da" Sound Exploration**
+
 **Sound Target: "Da"**
+
 **Duration: 2-3 minutes**
+
 **Learning Goal: Master tongue-tip sounds and "dada" association**
 
 ### What You Will Teach:
 
-- Tongue positioning for "d" sounds
-- "Da" as building block for "dada"
-- Sound-action relationship
+    - Tongue positioning for "d" sounds
+    - "Da" as building block for "dada"
+    - Sound-action relationship
 
 ### Lesson Structure:
 
@@ -97,13 +106,16 @@
 
 # Note:
 
-- "D" sounds require more motor control than "b" or "m"
-- May take longer to achieve than previous sounds
-- Celebrate any tongue movement attempts
+    - "D" sounds require more motor control than "b" or "m"
+    - May take longer to achieve than previous sounds
+    - Celebrate any tongue movement attempts
 
 **Lesson 1.4: "Ga" Sound Discovery**
+
 **Sound Target: "Ga"**
+
 **Duration: 2-3 minutes**
+
 **Learning Goal: Develop back-of-tongue sounds**
 
 ### What You Will Teach:
@@ -121,8 +133,11 @@
 **Phase 3**: Sound Mastery (30 seconds) - Achievement: Bubble fountain for successful "ga" - Buddy's Role: Shows mastery celebration - Transition: Prepares for vowel sound module
 
 **Lesson 2.1: "Ah" Sound Expression**
+
 **Sound Target: "Ah"**
+
 **Duration: 2-3 minutes**
+
 **Learning Goal: Master open vowel sounds**
 
 ### What You Will Teach:
@@ -133,25 +148,19 @@
 
 ### Lesson Structure:
 
-- Phase 1: Vowel Introduction (30 seconds)
-- Buddy's Role: Long, clear "ahhhhh" sounds
-- Visual Element: Sun expands with sustained "ah"
-- Teaching: Mouth wide open, relaxed jaw
+**Phase 1**: Vowel Introduction (30 seconds) - Buddy's Role: Long, clear "ahhhhh" sounds - Visual Element: Sun expands with sustained "ah" - Teaching: Mouth wide open, relaxed jaw
 
-- Phase 2: Sustained Practice (90 seconds)
-- Sound Trigger: Any "ah" vowel sounds
-- Visual Response: Sun rays grow longer with sound duration
-- Special Feature: Longer sounds = bigger visual rewards
-- Success Marker: Clear "ah" for 1+ seconds
+**Phase 2**: Sustained Practice (90 seconds) - Sound Trigger: Any "ah" vowel sounds - Visual Response: Sun rays grow longer with sound duration - Special Feature: Longer sounds = bigger visual rewards - Success Marker: Clear "ah" for 1+ seconds
 
-- Phase 3: Expression Building (30 seconds)
-- Emotional Range: Happy "ah", excited "ah", gentle "ah"
-- Visual Variety: Different sun colors for different expressions
+**Phase 3**: Expression Building (30 seconds) - Emotional Range: Happy "ah", excited "ah", gentle "ah" - Visual Variety: Different sun colors for different expressions
 
-**Lesson 2.2: "Oh" Sound Development
-Sound Target: "Oh"
-Duration: 2-3 minutes
-Learning Goal: Develop rounded lip positioning **
+**Lesson 2.2: "Oh" Sound Development**
+
+**Sound Target: "Oh"**
+
+**Duration: 2-3 minutes**
+
+**Learning Goal: Develop rounded lip positioning**
 
 ### Lesson Structure:
 
@@ -159,55 +168,47 @@ Learning Goal: Develop rounded lip positioning **
 
 **Phase 2**: Shape Practice (90 seconds) - Sound Trigger: Any "oh" or rounded sounds - Visual Response: Circles grow and glow - Success Marker: Clear "oh" with proper mouth shape
 
-- Phase 3: Sound Combinations (30 seconds)
-- Advanced Practice: "Oh-ah" sound switching
-- Visual Pattern: Circles transform to suns and back
-  ** Goal: Vocal flexibility development **
+**Phase 3**: Sound Combinations (30 seconds) - Advanced Practice: "Oh-ah" sound switching - Visual Pattern: Circles transform to suns and back
+**Goal: Vocal flexibility development**
 
-** Lesson 2.3: "Ee" Sound Practice
-Sound Target: "Ee"
-Duration: 2-3 minutes
-Learning Goal: Master high-front vowel positioning **
+**Lesson 2.3: "Ee" Sound Practice**
 
-### Lesson Structure:
+**Sound Target: "Ee"**
 
-- Phase 1: High Sound Introduction (30 seconds)
-- Buddy's Role: Bright, clear "eeee" sounds
-- Visual Element: Lightning bolt flashes with "ee"
-- Teaching: Lips spread, tongue high
+**Duration: 2-3 minutes**
 
-- Phase 2: Precision Practice (90 seconds)
-- Sound Trigger: Any "ee" or high-pitched sounds
-- Visual Response: Lightning creates sparkles
-- Pitch Recognition: Higher sounds = more sparkles
-- Success Marker: Clear "ee" sound
-
-** Lesson 2.4: Mixed Vowel Combinations
-Sound Target: All Vowels ("Ah-Oh-Ee")
-Duration: 3-4 minutes
-Learning Goal: Integrate all learned vowel sounds **
+**Learning Goal: Master high-front vowel positioning**
 
 ### Lesson Structure:
 
-- Phase 1: Review Session (45 seconds)
-- Buddy's Role: Demonstrates "ah-oh-ee" sequence
-- Visual Element: Sun-Circle-Lightning sequence
-- Review: All mouth positions
+**Phase 1**: High Sound Introduction (30 seconds) - Buddy's Role: Bright, clear "eeee" sounds - Visual Element: Lightning bolt flashes with "ee" - Teaching: Lips spread, tongue high
 
-- Phase 2: Combination Practice (150 seconds)
-- Sound Trigger: Any vowel sounds in sequence
-- Visual Response: Shape transitions match sound changes
-- Challenge Level: Rewards for 2+ vowel combinations
-- Success Marker: Any two different vowel sounds
+**Phase 2**: Precision Practice (90 seconds) - Sound Trigger: Any "ee" or high-pitched sounds  
+ - Visual Response: Lightning creates sparkles - Pitch Recognition: Higher sounds = more sparkles - Success Marker: Clear "ee" sound
 
-- Phase 3: Mastery Celebration (45 seconds)
-- Achievement: All shapes dance together
-- Buddy's Role: Shows mastery pride
+**Lesson 2.4: Mixed Vowel Combinations**
 
-** Lesson 3.1: Repetitive Babbling (Ba-Ba-Ba)
-Sound Target: Repeated Consonant-Vowel Combinations
-Duration: 3-4 minutes
-Learning Goal: Develop rhythmic speech patterns **
+**Sound Target: All Vowels ("Ah-Oh-Ee")**
+
+**Duration: 3-4 minutes**
+
+**Learning Goal: Integrate all learned vowel sounds**
+
+### Lesson Structure:
+
+**Phase 1**: Review Session (45 seconds) - Buddy's Role: Demonstrates "ah-oh-ee" sequence - Visual Element: Sun-Circle-Lightning sequence - Review: All mouth positions
+
+**Phase 2**: Combination Practice (150 seconds) - Sound Trigger: Any vowel sounds in sequence - Visual Response: Shape transitions match sound changes - Challenge Level: Rewards for 2+ vowel combinations - Success Marker: Any two different vowel sounds
+
+**Phase 3**: Mastery Celebration (45 seconds) - Achievement: All shapes dance together - Buddy's Role: Shows mastery pride
+
+**Lesson 3.1: Repetitive Babbling (Ba-Ba-Ba)**
+
+**Sound Target: Repeated Consonant-Vowel Combinations**
+
+**Duration: 3-4 minutes**
+
+**Learning Goal: Develop rhythmic speech patterns**
 
 ### Lesson Structure:
 
