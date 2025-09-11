@@ -371,13 +371,13 @@
 
 **Goal: Rhythm as foundation for future speech**
 
-**Lesson 3.4: Free Sound Exploration**
+_Lesson 3.4: Free Sound Exploration_
 
-**Sound Target: All Learned Sounds**
+_Sound Target: All Learned Sounds_
 
-**Duration: 4-5 minutes**
+_Duration: 4-5 minutes_
 
-**Learning Goal: Independent sound creativity and mastery**
+_Learning Goal: Independent sound creativity and mastery_
 
 ### Lesson Structure:
 
