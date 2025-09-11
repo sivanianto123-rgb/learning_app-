@@ -36,11 +36,11 @@
 
 ## Lesson 1.1: "Ba" Sound Introduction and Practice
 
-**Sound Target: "Ba"**
+_Sound Target: "Ba"_
 
-**Duration: 2-3 minutes**
+\*_Duration: 2-3 minutes_
 
-**Learning Goal: Introduce and encourage "ba" sound production**
+\*Learning Goal: Introduce and encourage "ba" sound production\*\*
 
 ### Lesson Structure:
 
@@ -67,13 +67,13 @@
 - Can repeat indefinitely until success criteria met
 - Move to next lesson when baby consistently produces "ba" sound
 
-**Lesson 1.2: "Ma" Sound Recognition and Production**
+_Lesson 1.2: "Ma" Sound Recognition and Production_
 
-**Sound Target: "Ma"**
+_Sound Target: "Ma"_
 
-**Duration: 2-3 minutes**
+_Duration: 2-3 minutes_
 
-**Learning Goal: Develop "ma" sound through emotional connection**
+_Learning Goal: Develop "ma" sound through emotional connection_
 
 ### Lesson Structure:
 
@@ -96,13 +96,13 @@
     - Audio: Gentle "mama loves you" melody
     - Purpose: Connects sound learning to family bond
 
-**Lesson 1.3: "Da" Sound Exploration**
+_Lesson 1.3: "Da" Sound Exploration_
 
-**Sound Target: "Da"**
+_Sound Target: "Da"_
 
-**Duration: 2-3 minutes**
+_Duration: 2-3 minutes_
 
-**Learning Goal: Master tongue-tip sounds and "dada" association**
+_Learning Goal: Master tongue-tip sounds and "dada" association_
 
 ### What You Will Teach:
 
@@ -137,13 +137,13 @@
     - May take longer to achieve than previous sounds
     - Celebrate any tongue movement attempts
 
-**Lesson 1.4: "Ga" Sound Discovery**
+_Lesson 1.4: "Ga" Sound Discovery_
 
-**Sound Target: "Ga"**
+_Sound Target: "Ga"_
 
-**Duration: 2-3 minutes**
+_Duration: 2-3 minutes_
 
-**Learning Goal: Develop back-of-tongue sounds**
+_Learning Goal: Develop back-of-tongue sounds_
 
 ### What You Will Teach:
 
@@ -172,13 +172,13 @@
     - Buddy's Role: Shows mastery celebration
     - Transition: Prepares for vowel sound module
 
-**Lesson 2.1: "Ah" Sound Expression**
+_Lesson 2.1: "Ah" Sound Expression_
 
-**Sound Target: "Ah"**
+_Sound Target: "Ah"_
 
-**Duration: 2-3 minutes**
+_Duration: 2-3 minutes_
 
-**Learning Goal: Master open vowel sounds**
+_Learning Goal: Master open vowel sounds_
 
 ### What You Will Teach:
 
@@ -206,13 +206,13 @@
     - Emotional Range: Happy "ah", excited "ah", gentle "ah"
     - Visual Variety: Different sun colors for different expressions
 
-**Lesson 2.2: "Oh" Sound Development**
+_Lesson 2.2: "Oh" Sound Development_
 
-**Sound Target: "Oh"**
+_Sound Target: "Oh"_
 
-**Duration: 2-3 minutes**
+_Duration: 2-3 minutes_
 
-**Learning Goal: Develop rounded lip positioning**
+_Learning Goal: Develop rounded lip positioning_
 
 ### Lesson Structure:
 
@@ -232,15 +232,15 @@
     - Advanced Practice: "Oh-ah" sound switching
     - Visual Pattern: Circles transform to suns and back
 
-**Goal: Vocal flexibility development**
+_Goal: Vocal flexibility development_
 
-**Lesson 2.3: "Ee" Sound Practice**
+_Lesson 2.3: "Ee" Sound Practice_
 
-**Sound Target: "Ee"**
+_Sound Target: "Ee"_
 
-**Duration: 2-3 minutes**
+_Duration: 2-3 minutes_
 
-**Learning Goal: Master high-front vowel positioning**
+_Learning Goal: Master high-front vowel positioning_
 
 ### Lesson Structure:
 
@@ -257,13 +257,13 @@
     - Pitch Recognition: Higher sounds = more sparkles
     - Success Marker: Clear "ee" sound
 
-**Lesson 2.4: Mixed Vowel Combinations**
+_Lesson 2.4: Mixed Vowel Combinations_
 
-**Sound Target: All Vowels ("Ah-Oh-Ee")**
+_Sound Target: All Vowels ("Ah-Oh-Ee")_
 
-**Duration: 3-4 minutes**
+_Duration: 3-4 minutes_
 
-**Learning Goal: Integrate all learned vowel sounds**
+_Learning Goal: Integrate all learned vowel sounds_
 
 ### Lesson Structure:
 
@@ -285,13 +285,13 @@
     - Achievement: All shapes dance together
     - Buddy's Role: Shows mastery pride
 
-**Lesson 3.1: Repetitive Babbling (Ba-Ba-Ba)**
+_Lesson 3.1: Repetitive Babbling (Ba-Ba-Ba)_
 
-**Sound Target: Repeated Consonant-Vowel Combinations**
+_Sound Target: Repeated Consonant-Vowel Combinations_
 
-**Duration: 3-4 minutes**
+_Duration: 3-4 minutes_
 
-**Learning Goal: Develop rhythmic speech patterns**
+_Learning Goal: Develop rhythmic speech patterns_
 
 ### Lesson Structure:
 
@@ -313,13 +313,13 @@
     - Open Practice: Any rhythmic babbling celebrated
     - Visual : Balls create patterns based on baby's rhythm
 
-**Lesson 3.2: Sound Chaining (Ba-Ma-Da)**
+_Lesson 3.2: Sound Chaining (Ba-Ma-Da)_
 
-**Sound Target: Different Sound Combinations**
+_Sound Target: Different Sound Combinations_
 
-**Duration: 3-4 minutes**
+_Duration: 3-4 minutes_
 
-**Learning Goal: Build sound variety and sequencing**
+_Learning Goal: Build sound variety and sequencing_
 
 ### Lesson Structure:
 
@@ -341,13 +341,13 @@
     - Free Exploration: Any sound combinations celebrated
     - Visual Creativity: Train creates unique patterns
 
-**Lesson 3.3: Rhythm and Timing**
+_Lesson 3.3: Rhythm and Timing_
 
-**Sound Target: Rhythmic Patterns**
+_Sound Target: Rhythmic Patterns_
 
-**Duration: 3-4 minutes**
+_Duration: 3-4 minutes_
 
-**Learning Goal: Develop temporal speech awareness**
+_Learning Goal: Develop temporal speech awareness_
 
 ### Lesson Structure:
 
