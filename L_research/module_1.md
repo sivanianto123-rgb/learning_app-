@@ -38,9 +38,9 @@
 
 _Sound Target: "Ba"_
 
-\*_Duration: 2-3 minutes_
+_Duration: 2-3 minutes_
 
-\*Learning Goal: Introduce and encourage "ba" sound production\*\*
+_Learning Goal: Introduce and encourage "ba" sound production_
 
 ### Lesson Structure:
 
