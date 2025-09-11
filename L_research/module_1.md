@@ -67,7 +67,7 @@ _Learning Goal: Introduce and encourage "ba" sound production_
 - Can repeat indefinitely until success criteria met
 - Move to next lesson when baby consistently produces "ba" sound
 
-_Lesson 1.2: "Ma" Sound Recognition and Production_
+**\_Lesson 1.2**: "Ma" Sound Recognition and Production\_
 
 _Sound Target: "Ma"_
 
