@@ -1,48 +1,49 @@
-import '../../../Utils/Common_imports/common_imports.dart';
+import '../../utils/common_imports/common_imports.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends StatefulWidget {
   final VoidCallback onSettingsTap;
   final VoidCallback onSoundTap;
   final bool isMuted;
 
   HomeHeader({
+    Key? key,
     required this.onSettingsTap,
     required this.onSoundTap,
     required this.isMuted,
-  });
+  }) : super(key: key);
+
+  @override
+  State<HomeHeader> createState() => _HomeHeaderState();
+}
+
+class _HomeHeaderState extends State<HomeHeader> {
+  bool _musicPressed = false;
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      top: 10,
-      right: 10,
+    return Padding(
+      padding: EdgeInsets.all(16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildIconButton(Icons.settings, onSettingsTap),
-          SizedBox(width: 10),
-          _buildIconButton(
-            isMuted ? Icons.volume_off : Icons.volume_up,
-            onSoundTap,
+          GestureDetector(
+            onTapDown: (_) => setState(() => _musicPressed = true),
+            onTapUp: (_) {
+              setState(() => _musicPressed = false);
+              widget.onSoundTap();
+            },
+            onTapCancel: () => setState(() => _musicPressed = false),
+            child: AnimatedOpacity(
+              duration: Duration(milliseconds: 100),
+              opacity: _musicPressed ? 0.6 : (widget.isMuted ? 0.4 : 1.0),
+              child: Image.asset(
+                'lib/assets/icons/music.png',
+                width: 45,
+                height: 45,
+              ),
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildIconButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [Color(0xFF7DD3FC), Color(0xFFC4B5FD)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Icon(icon, color: Colors.white, size: 24),
       ),
     );
   }

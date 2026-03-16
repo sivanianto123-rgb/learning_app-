@@ -1,14 +1,13 @@
-import '../../../Utils/Common_imports/common_imports.dart';
+import '../../../utils/common_imports/common_imports.dart';
 import 'koala_title.dart';
 import 'koala_container.dart';
-import 'koala_challenge_data.dart';
+import '../../../widgets/back_button.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class KoalaChallenge extends StatefulWidget {
   final String sound;
   final bool isCorrect;
   final Function(String) onVoiceResult;
-  final VoidCallback onReplay;
   final VoidCallback onBack;
 
   KoalaChallenge({
@@ -16,7 +15,6 @@ class KoalaChallenge extends StatefulWidget {
     required this.sound,
     required this.isCorrect,
     required this.onVoiceResult,
-    required this.onReplay,
     required this.onBack,
   }) : super(key: key);
 
@@ -26,71 +24,77 @@ class KoalaChallenge extends StatefulWidget {
 
 class _KoalaChallengeState extends State<KoalaChallenge> {
   bool _isListening = false;
-  stt.SpeechToText? _speech;
-  bool _speechAvailable = false;
-  String _spokenText = '';
   bool _isDisposed = false;
-  late KoalaChallengeData _challengeData;
+  bool _isSpeechReady = false;
+  stt.SpeechToText? _speech;
+  String _spokenText = '';
 
   @override
   void initState() {
     super.initState();
-    _challengeData = KoalaChallengeData.getRandomChallenge();
-    _initSpeech();
+    _initSpeechEarly();
   }
 
   void _safeSetState(VoidCallback fn) {
-    if (mounted && !_isDisposed) {
-      setState(fn);
+    if (mounted && !_isDisposed) setState(fn);
+  }
+
+  Future<void> _initSpeechEarly() async {
+    _speech = stt.SpeechToText();
+    try {
+      _isSpeechReady = await _speech!.initialize(
+        onStatus: (status) {
+          if (status == 'done' || status == 'notListening') {
+            _safeSetState(() => _isListening = false);
+          }
+        },
+        onError: (error) {
+          _safeSetState(() => _isListening = false);
+        },
+      );
+    } catch (e) {
+      _isSpeechReady = false;
     }
   }
 
-  void _initSpeech() async {
-    _speech = stt.SpeechToText();
-    _speechAvailable = await _speech!.initialize(
-      onStatus: (status) {
-        if (status == 'done' || status == 'notListening') {
-          _safeSetState(() => _isListening = false);
-        }
-      },
-      onError: (error) {
-        _safeSetState(() => _isListening = false);
-      },
-    );
-    _safeSetState(() {});
+  Future<void> _toggleListening() async {
+    if (_isListening) {
+      await _stopListening();
+    } else {
+      await _startListening();
+    }
   }
 
-  void _startListening() async {
-    if (!_speechAvailable || _speech == null) return;
+  Future<void> _startListening() async {
+    if (!_isSpeechReady || _speech == null || _isListening) return;
 
     _safeSetState(() {
       _isListening = true;
       _spokenText = '';
     });
 
-    await _speech!.listen(
-      onResult: (result) {
-        _safeSetState(() {
-          _spokenText = result.recognizedWords;
-        });
-        if (result.finalResult) {
-          _checkResult(result.recognizedWords);
-        }
-      },
-      listenFor: Duration(seconds: 5),
-      pauseFor: Duration(seconds: 2),
-    );
-  }
-
-  void _stopListening() async {
-    if (_speech != null) {
-      await _speech!.stop();
+    try {
+      await _speech!.listen(
+        onResult: (result) {
+          _safeSetState(() => _spokenText = result.recognizedWords);
+          if (result.finalResult) {
+            widget.onVoiceResult(result.recognizedWords);
+          }
+        },
+        listenFor: Duration(seconds: 5),
+        pauseFor: Duration(seconds: 2),
+        listenMode: stt.ListenMode.confirmation,
+      );
+    } catch (e) {
+      _safeSetState(() => _isListening = false);
     }
-    _safeSetState(() => _isListening = false);
   }
 
-  void _checkResult(String spokenWords) {
-    widget.onVoiceResult(spokenWords);
+  Future<void> _stopListening() async {
+    try {
+      await _speech?.stop();
+    } catch (e) {}
+    _safeSetState(() => _isListening = false);
   }
 
   @override
@@ -110,22 +114,20 @@ class _KoalaChallengeState extends State<KoalaChallenge> {
       children: [
         _buildHeader(),
         SizedBox(height: screenHeight * 0.02),
-        KoalaTitle(title: _challengeData.title),
+        KoalaTitle(),
         SizedBox(height: screenHeight * 0.03),
         Expanded(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               KoalaContainer(
-                animationPath: _challengeData.sadAnimation,
+                animationPath: 'lib/assets/animations/Koala_sad.lottie',
                 isFaded: widget.isCorrect,
-                label: _challengeData.sadLabel,
               ),
               SizedBox(width: screenWidth * 0.08),
               KoalaContainer(
-                animationPath: _challengeData.happyAnimation,
+                animationPath: 'lib/assets/animations/Koala_happy.lottie',
                 isFaded: !widget.isCorrect,
-                label: _challengeData.happyLabel,
               ),
             ],
           ),
@@ -133,12 +135,19 @@ class _KoalaChallengeState extends State<KoalaChallenge> {
         if (_spokenText.isNotEmpty)
           Padding(
             padding: EdgeInsets.only(bottom: 10),
-            child: Text(
-              'You said: $_spokenText',
-              style: TextStyle(fontSize: 18, color: Colors.white),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(51),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'You said: $_spokenText',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
             ),
           ),
-        _buildButtons(),
+        _buildMicButton(),
         SizedBox(height: screenHeight * 0.05),
       ],
     );
@@ -147,71 +156,35 @@ class _KoalaChallengeState extends State<KoalaChallenge> {
   Widget _buildHeader() {
     return Padding(
       padding: EdgeInsets.all(16),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: widget.onBack,
-            child: Icon(Icons.arrow_back, color: Colors.white, size: 30),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [_buildReplayButton(), SizedBox(width: 20), _buildMicButton()],
-    );
-  }
-
-  Widget _buildReplayButton() {
-    return GestureDetector(
-      onTap: widget.onReplay,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-        decoration: BoxDecoration(
-          color: Color(0xFF6B7A99),
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Color(0xFFCCA7DA), width: 4),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.replay, color: Colors.white, size: 24),
-            SizedBox(width: 8),
-            Text('Replay', style: AppFonts.primaryText()),
-          ],
-        ),
-      ),
+      child: Row(children: [AppBackButton(onPressed: widget.onBack)]),
     );
   }
 
   Widget _buildMicButton() {
     return GestureDetector(
-      onTap: _isListening ? _stopListening : _startListening,
+      onTap: _toggleListening,
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+        duration: Duration(milliseconds: 200),
+        width: _isListening ? 80 : 70,
+        height: _isListening ? 80 : 70,
         decoration: BoxDecoration(
+          shape: BoxShape.circle,
           color: _isListening ? Colors.red : Color(0xFF6B7A99),
-          borderRadius: BorderRadius.circular(30),
           border: Border.all(color: Color(0xFFCCA7DA), width: 4),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              _isListening ? Icons.mic : Icons.mic_none,
-              color: Colors.white,
-              size: 24,
-            ),
-            SizedBox(width: 8),
-            Text(
-              _isListening ? 'Listening...' : 'Speak',
-              style: AppFonts.primaryText(),
+          boxShadow: [
+            BoxShadow(
+              color: _isListening
+                  ? Colors.red.withAlpha(128)
+                  : Colors.black.withAlpha(77),
+              blurRadius: _isListening ? 20 : 10,
+              spreadRadius: _isListening ? 2 : 0,
             ),
           ],
+        ),
+        child: Icon(
+          _isListening ? Icons.mic : Icons.mic_none,
+          color: Colors.white,
+          size: _isListening ? 40 : 35,
         ),
       ),
     );

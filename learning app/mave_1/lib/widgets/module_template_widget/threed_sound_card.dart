@@ -1,15 +1,16 @@
-import '../../../Utils/Common_imports/common_imports.dart';
+import '../../../utils/common_imports/common_imports.dart';
 
 class BulgedSoundCard extends StatefulWidget {
   final String sound;
   final bool isCompleted;
-  final VoidCallback onTap;
+  final VoidCallback onPressed;
 
   BulgedSoundCard({
+    Key? key,
     required this.sound,
     required this.isCompleted,
-    required this.onTap,
-  });
+    required this.onPressed,
+  }) : super(key: key);
 
   @override
   State<BulgedSoundCard> createState() => _BulgedSoundCardState();
@@ -79,7 +80,7 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
       onTapUp: (_) {
         setState(() => _isPressed = false);
         if (!widget.isCompleted) {
-          widget.onTap();
+          widget.onPressed();
         }
       },
       onTapCancel: () => setState(() => _isPressed = false),
@@ -103,13 +104,13 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
                     ? []
                     : [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withAlpha(77),
                           offset: Offset(4, 4),
                           blurRadius: 10,
                           spreadRadius: 1,
                         ),
                         BoxShadow(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withAlpha(204),
                           offset: Offset(-3, -3),
                           blurRadius: 8,
                           spreadRadius: 1,
@@ -129,7 +130,7 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
                     ),
                     Container(
                       color: widget.isCompleted
-                          ? Colors.green.withOpacity(0.5)
+                          ? Colors.green.withAlpha(128)
                           : Colors.transparent,
                     ),
                     Center(
@@ -147,7 +148,7 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
                                 color: Colors.white,
                                 shadows: [
                                   Shadow(
-                                    color: Colors.black.withOpacity(0.5),
+                                    color: Colors.black.withAlpha(128),
                                     offset: Offset(1, 1),
                                     blurRadius: 3,
                                   ),

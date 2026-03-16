@@ -1,4 +1,4 @@
-import '../../../Utils/Common_imports/common_imports.dart';
+import '../../../utils/common_imports/common_imports.dart';
 import '../module_template_widget/threed_sound_card.dart';
 
 class SoundGrid extends StatelessWidget {
@@ -7,10 +7,11 @@ class SoundGrid extends StatelessWidget {
   final Function(int) onSoundTap;
 
   SoundGrid({
+    Key? key,
     required this.sounds,
     required this.completedSounds,
     required this.onSoundTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class SoundGrid extends StatelessWidget {
           return BulgedSoundCard(
             sound: sounds[index],
             isCompleted: completedSounds[index],
-            onTap: () => onSoundTap(index),
+            onPressed: () => onSoundTap(index),
           );
         }),
       ),

@@ -1,21 +1,19 @@
-import '../../../Utils/Common_imports/common_imports.dart';
+import '../../../utils/common_imports/common_imports.dart';
 
 class KoalaTitle extends StatelessWidget {
-  final String title;
-
-  KoalaTitle({required this.title});
+  KoalaTitle({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Text(
-          title,
+          'Lets make Mr Koala happy',
           textAlign: TextAlign.center,
           style: AppFonts.homeScreenTextStroke(),
         ),
         Text(
-          title,
+          'Lets make Mr Koala happy',
           textAlign: TextAlign.center,
           style: AppFonts.homeScreenText(),
         ),

@@ -1,20 +1,9 @@
-import '../../../Utils/Common_imports/common_imports.dart';
+import '../../../utils/common_imports/common_imports.dart';
 
 class SoundLottie extends StatelessWidget {
-  final String sound;
+  final String animationPath;
 
-  SoundLottie({required this.sound});
-
-  String _getLottiePath() {
-    switch (sound.toLowerCase()) {
-      case 'mama':
-        return 'lib/assets/animations/mama.lottie';
-      case 'dada':
-        return 'lib/assets/animations/dada.lottie';
-      default:
-        return 'lib/assets/animations/mama.lottie';
-    }
-  }
+  SoundLottie({Key? key, required this.animationPath}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +12,7 @@ class SoundLottie extends StatelessWidget {
     return SizedBox(
       height: screenHeight * 0.35,
       child: DotLottieLoader.fromAsset(
-        _getLottiePath(),
+        animationPath,
         frameBuilder: (context, dotlottie) {
           if (dotlottie != null) {
             return Lottie.memory(

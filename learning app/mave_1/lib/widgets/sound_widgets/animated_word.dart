@@ -1,4 +1,4 @@
-import '../../../Utils/Common_imports/common_imports.dart';
+import '../../../utils/common_imports/common_imports.dart';
 
 class AnimatedWord extends StatefulWidget {
   final List<String> syllables;
@@ -7,11 +7,12 @@ class AnimatedWord extends StatefulWidget {
   final VoidCallback onSyllableComplete;
 
   AnimatedWord({
+    Key? key,
     required this.syllables,
     required this.currentIndex,
     required this.isAnimating,
     required this.onSyllableComplete,
-  });
+  }) : super(key: key);
 
   @override
   State<AnimatedWord> createState() => _AnimatedWordState();
@@ -21,14 +22,12 @@ class _AnimatedWordState extends State<AnimatedWord>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
+  bool _hasStarted = false;
 
   @override
   void initState() {
     super.initState();
     _setupAnimation();
-    if (widget.isAnimating) {
-      _controller.forward();
-    }
   }
 
   void _setupAnimation() {
@@ -44,22 +43,34 @@ class _AnimatedWordState extends State<AnimatedWord>
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _controller.reverse().then((_) {
-          _controller.reset();
-          widget.onSyllableComplete();
-        });
+        _controller.reverse();
+      } else if (status == AnimationStatus.dismissed && _hasStarted) {
+        _hasStarted = false;
+        widget.onSyllableComplete();
       }
     });
+  }
+
+  void _startAnimation() {
+    if (_hasStarted || !mounted) return;
+    _hasStarted = true;
+    _controller.forward(from: 0);
   }
 
   @override
   void didUpdateWidget(AnimatedWord oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.isAnimating && widget.currentIndex != oldWidget.currentIndex) {
-      _controller.forward();
-    }
-    if (widget.isAnimating && !oldWidget.isAnimating) {
-      _controller.forward();
+
+    if (widget.isAnimating && !_hasStarted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _startAnimation();
+      });
+    } else if (widget.isAnimating &&
+        widget.currentIndex != oldWidget.currentIndex &&
+        !_hasStarted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _startAnimation();
+      });
     }
   }
 

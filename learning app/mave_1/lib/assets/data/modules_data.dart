@@ -1,0 +1,72 @@
+import '../../models/module_data.dart';
+
+class ModulesData {
+  static ModuleData firstSounds = ModuleData(
+    title: 'First Sounds',
+    sounds: [
+      SoundData(
+        name: 'mama',
+        syllables: ['ma', 'ma'],
+        audioPath: 'audio/mama.wav',
+        animationPath: 'lib/assets/animations/mama.lottie',
+        targetAccuracy: 0.8,
+      ),
+      SoundData(
+        name: 'papa',
+        syllables: ['pa', 'pa'],
+        audioPath: 'audio/papa.wav',
+        animationPath: 'lib/assets/animations/mama.lottie',
+        targetAccuracy: 0.8,
+      ),
+      SoundData(
+        name: 'dada',
+        syllables: ['da', 'da'],
+        audioPath: 'audio/dada.wav',
+        animationPath: 'lib/assets/animations/dada.lottie',
+        targetAccuracy: 0.8,
+      ),
+      SoundData(
+        name: 'baba',
+        syllables: ['ba', 'ba'],
+        audioPath: 'audio/baba.wav',
+        animationPath: 'lib/assets/animations/mama.lottie',
+        targetAccuracy: 0.8,
+      ),
+      SoundData(
+        name: 'aaaa',
+        syllables: ['aa', 'aa'],
+        audioPath: 'audio/aaa.wav',
+        animationPath: 'lib/assets/animations/mama.lottie',
+        targetAccuracy: 0.8,
+      ),
+      SoundData(
+        name: 'ooo',
+        syllables: ['ooo'],
+        audioPath: 'audio/ooo.wav',
+        animationPath: 'lib/assets/animations/mama.lottie',
+        targetAccuracy: 0.8,
+      ),
+      SoundData(
+        name: 'eee',
+        syllables: ['eee'],
+        audioPath: 'audio/eee.wav',
+        animationPath: 'lib/assets/animations/mama.lottie',
+        targetAccuracy: 0.8,
+      ),
+    ],
+  );
+
+  static ModuleData longSounds = ModuleData(title: 'Long Sounds', sounds: [
+   
+    ],
+  );
+
+  static ModuleData combinations = ModuleData(
+    title: 'Combinations',
+    sounds: [],
+  );
+
+  static ModuleData words = ModuleData(title: 'Words', sounds: [
+    ],
+  );
+}
