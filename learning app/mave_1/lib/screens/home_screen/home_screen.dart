@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       false,
     );
     _longSoundsCompleted = List.filled(
-      ModulesData.longSounds.sounds.length,
+      ModulesData.animalSounds.sounds.length,
       false,
     );
     _combinationsCompleted = List.filled(
@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'progress': _calculateProgress(_firstSoundsCompleted),
     },
     {
-      'title': 'Long Sounds',
+      'title': 'Animal sounds',
       'progress': _calculateProgress(_longSoundsCompleted),
     },
     {
@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onUpdate = (list) => setState(() => _firstSoundsCompleted = list);
         break;
       case 1:
-        moduleData = ModulesData.longSounds;
+        moduleData = ModulesData.animalSounds;
         completedSounds = _longSoundsCompleted;
         onUpdate = (list) => setState(() => _longSoundsCompleted = list);
         break;

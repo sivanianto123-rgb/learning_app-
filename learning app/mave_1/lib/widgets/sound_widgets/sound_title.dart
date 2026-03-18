@@ -9,18 +9,7 @@ class SoundTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Color(0xFFCCA7DA), width: 5),
 
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(77),
-            offset: Offset(4, 4),
-            blurRadius: 10,
-          ),
-        ],
-      ),
       child: Text(
         title,
         textAlign: TextAlign.center,

@@ -1,4 +1,4 @@
-import '../../../utils/common_imports/common_imports.dart';
+import '../../utils/common_imports/common_imports.dart';
 
 class BulgedSoundCard extends StatefulWidget {
   final String sound;
@@ -19,8 +19,8 @@ class BulgedSoundCard extends StatefulWidget {
 class _BulgedSoundCardState extends State<BulgedSoundCard>
     with SingleTickerProviderStateMixin {
   bool _isPressed = false;
-  late AnimationController _shapeController;
-  late Animation<double> _shapeAnimation;
+  AnimationController? _shapeController;
+  Animation<double>? _shapeAnimation;
 
   @override
   void initState() {
@@ -35,27 +35,29 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
     );
 
     _shapeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _shapeController, curve: Curves.easeInOut),
+      CurvedAnimation(parent: _shapeController!, curve: Curves.easeInOut),
     );
 
     if (!widget.isCompleted) {
-      _shapeController.repeat(reverse: true);
+      _shapeController!.repeat(reverse: true);
     }
   }
 
   @override
   void didUpdateWidget(BulgedSoundCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.isCompleted && _shapeController.isAnimating) {
-      _shapeController.stop();
-    } else if (!widget.isCompleted && !_shapeController.isAnimating) {
-      _shapeController.repeat(reverse: true);
+    if (_shapeController == null) return;
+
+    if (widget.isCompleted && _shapeController!.isAnimating) {
+      _shapeController!.stop();
+    } else if (!widget.isCompleted && !_shapeController!.isAnimating) {
+      _shapeController!.repeat(reverse: true);
     }
   }
 
   @override
   void dispose() {
-    _shapeController.dispose();
+    _shapeController?.dispose();
     super.dispose();
   }
 
@@ -75,17 +77,19 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
 
   @override
   Widget build(BuildContext context) {
+    if (_shapeController == null || _shapeAnimation == null) {
+      return SizedBox(width: 120, height: 120);
+    }
+
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) {
         setState(() => _isPressed = false);
-        if (!widget.isCompleted) {
-          widget.onPressed();
-        }
+        widget.onPressed();
       },
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedBuilder(
-        animation: _shapeAnimation,
+        animation: _shapeAnimation!,
         builder: (context, child) {
           return AnimatedOpacity(
             duration: Duration(milliseconds: 500),
@@ -98,7 +102,7 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
               decoration: BoxDecoration(
                 borderRadius: widget.isCompleted
                     ? BorderRadius.circular(40)
-                    : _getAnimatedBorderRadius(_shapeAnimation.value),
+                    : _getAnimatedBorderRadius(_shapeAnimation!.value),
                 border: Border.all(color: Color(0xFFCCA7DA), width: 5),
                 boxShadow: _isPressed
                     ? []
@@ -120,7 +124,7 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
               child: ClipRRect(
                 borderRadius: widget.isCompleted
                     ? BorderRadius.circular(35)
-                    : _getAnimatedBorderRadius(_shapeAnimation.value),
+                    : _getAnimatedBorderRadius(_shapeAnimation!.value),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -128,11 +132,8 @@ class _BulgedSoundCardState extends State<BulgedSoundCard>
                       'lib/assets/images/module_background.jpg',
                       fit: BoxFit.cover,
                     ),
-                    Container(
-                      color: widget.isCompleted
-                          ? Colors.green.withAlpha(128)
-                          : Colors.transparent,
-                    ),
+                    if (widget.isCompleted)
+                      Container(color: Colors.green.withAlpha(128)),
                     Center(
                       child: widget.isCompleted
                           ? Icon(

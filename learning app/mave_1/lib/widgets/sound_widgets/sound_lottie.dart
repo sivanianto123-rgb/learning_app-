@@ -1,4 +1,4 @@
-import '../../../utils/common_imports/common_imports.dart';
+import '../../utils/common_imports/common_imports.dart';
 
 class SoundLottie extends StatelessWidget {
   final String animationPath;
@@ -8,6 +8,19 @@ class SoundLottie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
+
+    if (animationPath.isEmpty) {
+      return SizedBox(
+        height: screenHeight * 0.35,
+        child: Center(
+          child: Icon(
+            Icons.pets,
+            size: 100,
+            color: Colors.white.withAlpha(150),
+          ),
+        ),
+      );
+    }
 
     return SizedBox(
       height: screenHeight * 0.35,

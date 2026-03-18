@@ -30,8 +30,6 @@ class _ModuleScreenState extends State<ModuleScreen> {
   }
 
   void _onSoundTap(int index) async {
-    if (_completedSounds[index]) return;
-
     final soundData = widget.moduleData.sounds[index];
 
     final result = await Navigator.push<bool>(
@@ -47,7 +45,7 @@ class _ModuleScreenState extends State<ModuleScreen> {
       ),
     );
 
-    if (result == true) {
+    if (result == true && !_completedSounds[index]) {
       setState(() {
         _completedSounds[index] = true;
       });

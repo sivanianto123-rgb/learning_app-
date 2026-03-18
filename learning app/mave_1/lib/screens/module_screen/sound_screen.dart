@@ -2,12 +2,10 @@ import '../../utils/common_imports/common_imports.dart';
 import '../../widgets/sound_widgets/animated_word.dart';
 import '../../widgets/sound_widgets/sound_lottie.dart';
 import '../../widgets/sound_widgets/koala_challenge/koala_challenge.dart';
-import '../../widgets/sound_widgets/accuracy_bar.dart';
 import '../../widgets/back_button.dart';
 import 'package:soundpool/soundpool.dart';
 import 'package:flutter/services.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:permission_handler/permission_handler.dart';
 
 class SoundScreen extends StatefulWidget {
   final SoundData soundData;
@@ -25,15 +23,43 @@ class _SoundScreenState extends State<SoundScreen> {
   bool _isCorrect = false;
   bool _isDisposed = false;
   bool _isNavigating = false;
-  bool _isListening = false;
   double _accuracy = 0.0;
-  String _lastWords = '';
 
   Soundpool? _soundpool;
   int? _soundId;
   int? _streamId;
   stt.SpeechToText? _speech;
   bool _isSpeechReady = false;
+
+  final Map<String, List<String>> _alternativeMatches = {
+    'ooo': ['o', 'oh', 'ooh', 'oo', 'ohh', 'who', 'oooh', 'whoa'],
+    'eee': ['e', 'ee', 'eh', 'eeh', 'he', 'hee', 'yeah', 'yee', 'yi'],
+    'aaaa': ['a', 'aa', 'ah', 'aah', 'ahh', 'ha', 'haa'],
+    'mama': ['ma', 'mom', 'mum', 'mam', 'mommy', 'mummy', 'mamma'],
+    'papa': ['pa', 'pop', 'pap', 'poppy', 'pappa', 'daddy'],
+    'dada': ['da', 'dad', 'daddy', 'dah'],
+    'baba': ['ba', 'bob', 'bab', 'baby'],
+    'moo': ['mo', 'muu', 'mu', 'mooo', 'mow', 'mou'],
+    'baa': ['ba', 'bah', 'baah', 'beh'],
+    'meow': ['mow', 'mao', 'me', 'mew', 'meou', 'miao', 'miaow'],
+    'woof': ['woo', 'oof', 'wu', 'wuf', 'wuff', 'ruff', 'arf', 'bow', 'bowwow'],
+    'quack': [
+      'qua',
+      'kwa',
+      'kwak',
+      'wack',
+      'ack',
+      'kak',
+      'ka',
+      'wa',
+      'qu',
+      'quak',
+      'duck',
+      'qwak',
+    ],
+    'oink': ['oi', 'oik', 'oing', 'ink', 'oynk', 'pig'],
+    'neigh': ['nay', 'neh', 'nee', 'nay', 'nai', 'horse', 'hay'],
+  };
 
   @override
   void initState() {
@@ -42,7 +68,6 @@ class _SoundScreenState extends State<SoundScreen> {
   }
 
   Future<void> _initAll() async {
-    await _requestMicPermission();
     await _initAudio();
     await _initSpeech();
 
@@ -56,24 +81,16 @@ class _SoundScreenState extends State<SoundScreen> {
     }
   }
 
-  Future<void> _requestMicPermission() async {
-    var status = await Permission.microphone.status;
-    if (!status.isGranted) {
-      await Permission.microphone.request();
-    }
-  }
-
   Future<void> _initSpeech() async {
     _speech = stt.SpeechToText();
     try {
       _isSpeechReady = await _speech!.initialize(
         onStatus: (status) {
-          debugPrint('Speech status: $status');
           if (status == 'done' || status == 'notListening') {
             if (mounted &&
                 !_isDisposed &&
                 !_showKoalaChallenge &&
-                _accuracy < 0.8) {
+                _accuracy < 0.5) {
               Future.delayed(Duration(milliseconds: 500), () {
                 if (mounted && !_isDisposed && !_showKoalaChallenge) {
                   _startListening();
@@ -82,13 +99,9 @@ class _SoundScreenState extends State<SoundScreen> {
             }
           }
         },
-        onError: (error) {
-          debugPrint('Speech error: ${error.errorMsg}');
-        },
+        onError: (error) {},
       );
-      debugPrint('Speech ready: $_isSpeechReady');
     } catch (e) {
-      debugPrint('Speech init error: $e');
       _isSpeechReady = false;
     }
   }
@@ -101,9 +114,7 @@ class _SoundScreenState extends State<SoundScreen> {
       );
       ByteData data = await rootBundle.load(widget.soundData.audioPath);
       _soundId = await _soundpool!.load(data);
-    } catch (e) {
-      debugPrint('Audio init error: $e');
-    }
+    } catch (e) {}
   }
 
   void _safeSetState(VoidCallback fn) {
@@ -123,68 +134,86 @@ class _SoundScreenState extends State<SoundScreen> {
     if (!_isSpeechReady ||
         _speech == null ||
         _isDisposed ||
-        _showKoalaChallenge ||
-        _isListening) {
-      debugPrint('Cannot start: ready=$_isSpeechReady listening=$_isListening');
+        _showKoalaChallenge) {
       return;
     }
-
-    _safeSetState(() => _isListening = true);
-    debugPrint('Starting to listen...');
 
     try {
       await _speech!.listen(
         onResult: (result) {
           if (_isDisposed || _showKoalaChallenge) return;
-          debugPrint('Heard: ${result.recognizedWords}');
-          _safeSetState(() => _lastWords = result.recognizedWords);
-          _processVoiceResult(result.recognizedWords);
+          if (result.recognizedWords.isNotEmpty) {
+            _processVoiceResult(result.recognizedWords);
+          }
         },
         listenFor: Duration(seconds: 20),
-        pauseFor: Duration(seconds: 4),
+        pauseFor: Duration(seconds: 3),
         listenMode: stt.ListenMode.dictation,
         cancelOnError: false,
         partialResults: true,
       );
-    } catch (e) {
-      debugPrint('Listen error: $e');
-      _safeSetState(() => _isListening = false);
-    }
+    } catch (e) {}
   }
 
   void _processVoiceResult(String spokenWords) {
     if (_isDisposed || _showKoalaChallenge) return;
 
-    String spoken = spokenWords.toLowerCase().replaceAll(' ', '');
-    String target = widget.soundData.name.toLowerCase();
+    String spoken = spokenWords.toLowerCase().replaceAll(' ', '').trim();
+    String target = widget.soundData.name
+        .toLowerCase()
+        .replaceAll(' ', '')
+        .trim();
 
-    double newAccuracy = 0.0;
+    double currentAccuracy = _calculateBabySpeechAccuracy(spoken, target);
 
-    if (spoken.contains(target)) {
-      newAccuracy = 1.0;
-    } else {
-      for (var syl in widget.soundData.syllables) {
-        if (spoken.contains(syl.toLowerCase())) {
-          newAccuracy = 0.5;
-          break;
+    if (currentAccuracy > _accuracy) {
+      _accuracy = currentAccuracy;
+    }
+
+    if (_accuracy >= 0.5) {
+      _goToKoalaChallenge();
+    }
+  }
+
+  double _calculateBabySpeechAccuracy(String spoken, String target) {
+    if (spoken.isEmpty || target.isEmpty) return 0.0;
+
+    if (spoken == target ||
+        spoken.contains(target) ||
+        target.contains(spoken)) {
+      return 1.0;
+    }
+
+    List<String>? alternatives = _alternativeMatches[target];
+    if (alternatives != null) {
+      for (var alt in alternatives) {
+        if (spoken.contains(alt) || spoken == alt) {
+          return 0.9;
         }
       }
     }
 
-    _safeSetState(() {
-      if (newAccuracy > _accuracy) _accuracy = newAccuracy;
-    });
-
-    if (_accuracy >= 0.8) {
-      _goToKoalaChallenge();
+    for (var syllable in widget.soundData.syllables) {
+      String syl = syllable.toLowerCase();
+      if (spoken.contains(syl)) {
+        return 0.8;
+      }
+      if (syl.isNotEmpty && spoken.contains(syl[0])) {
+        return 0.5;
+      }
     }
+
+    if (target.isNotEmpty && spoken.contains(target[0])) {
+      return 0.3;
+    }
+
+    return 0.0;
   }
 
   Future<void> _stopListening() async {
     try {
       await _speech?.stop();
     } catch (e) {}
-    _safeSetState(() => _isListening = false);
   }
 
   Future<void> _playAudio() async {
@@ -217,7 +246,30 @@ class _SoundScreenState extends State<SoundScreen> {
     String spoken = spokenWord.toLowerCase().replaceAll(' ', '');
     String target = widget.soundData.name.toLowerCase();
 
-    if (spoken.contains(target)) {
+    bool isMatch = spoken.contains(target) || target.contains(spoken);
+
+    if (!isMatch) {
+      List<String>? alternatives = _alternativeMatches[target];
+      if (alternatives != null) {
+        for (var alt in alternatives) {
+          if (spoken.contains(alt)) {
+            isMatch = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!isMatch) {
+      for (var syllable in widget.soundData.syllables) {
+        if (spoken.contains(syllable.toLowerCase())) {
+          isMatch = true;
+          break;
+        }
+      }
+    }
+
+    if (isMatch) {
       _safeSetState(() => _isCorrect = true);
       Future.delayed(Duration(seconds: 2), () {
         if (mounted && !_isDisposed && !_isNavigating) {
@@ -299,45 +351,18 @@ class _SoundScreenState extends State<SoundScreen> {
   Widget _buildWordAnimation() {
     var screenHeight = MediaQuery.of(context).size.height;
 
-    return Row(
+    return Column(
       key: ValueKey('word'),
       children: [
+        _buildHeader(),
+        SizedBox(height: screenHeight * 0.02),
+        _buildWordContainer(),
         Expanded(
-          child: Column(
-            children: [
-              _buildHeader(),
-              SizedBox(height: screenHeight * 0.02),
-              _buildWordContainer(),
-              Expanded(
-                child: Center(
-                  child: SoundLottie(
-                    animationPath: widget.soundData.animationPath,
-                  ),
-                ),
-              ),
-              if (_lastWords.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    'Heard: $_lastWords',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black54,
-                          offset: Offset(1, 1),
-                          blurRadius: 3,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              SizedBox(height: screenHeight * 0.03),
-            ],
+          child: Center(
+            child: SoundLottie(animationPath: widget.soundData.animationPath),
           ),
         ),
-        AccuracyBar(accuracy: _accuracy),
+        SizedBox(height: screenHeight * 0.05),
       ],
     );
   }
