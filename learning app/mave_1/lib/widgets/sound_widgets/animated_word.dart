@@ -1,4 +1,5 @@
-import '../../../utils/common_imports/common_imports.dart';
+import 'dart:async';
+import '../../utils/common_imports/common_imports.dart';
 
 class AnimatedWord extends StatefulWidget {
   final List<String> syllables;
@@ -18,94 +19,73 @@ class AnimatedWord extends StatefulWidget {
   State<AnimatedWord> createState() => _AnimatedWordState();
 }
 
-class _AnimatedWordState extends State<AnimatedWord>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  bool _hasStarted = false;
+class _AnimatedWordState extends State<AnimatedWord> {
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _setupAnimation();
-  }
-
-  void _setupAnimation() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 600),
-    );
-
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.2,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _controller.reverse();
-      } else if (status == AnimationStatus.dismissed && _hasStarted) {
-        _hasStarted = false;
-        widget.onSyllableComplete();
-      }
-    });
-  }
-
-  void _startAnimation() {
-    if (_hasStarted || !mounted) return;
-    _hasStarted = true;
-    _controller.forward(from: 0);
+    if (widget.isAnimating) {
+      _startTimer();
+    }
   }
 
   @override
   void didUpdateWidget(AnimatedWord oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.isAnimating && !_hasStarted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _startAnimation();
-      });
+    if (widget.isAnimating && !oldWidget.isAnimating) {
+      _startTimer();
     } else if (widget.isAnimating &&
-        widget.currentIndex != oldWidget.currentIndex &&
-        !_hasStarted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _startAnimation();
-      });
+        widget.currentIndex != oldWidget.currentIndex) {
+      _startTimer();
+    } else if (!widget.isAnimating) {
+      _cancelTimer();
     }
+  }
+
+  void _startTimer() {
+    _cancelTimer();
+    _timer = Timer(Duration(milliseconds: 500), () {
+      if (mounted && widget.isAnimating) {
+        widget.onSyllableComplete();
+      }
+    });
+  }
+
+  void _cancelTimer() {
+    _timer?.cancel();
+    _timer = null;
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _cancelTimer();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(widget.syllables.length, (index) {
-            bool isActive = widget.isAnimating && index == widget.currentIndex;
-            double scale = isActive ? _scaleAnimation.value : 1.0;
-            Color textColor = isActive ? Colors.red : Colors.white;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(widget.syllables.length, (index) {
+        bool isActive = widget.isAnimating && index == widget.currentIndex;
+        bool isPast = index < widget.currentIndex;
 
-            return Transform.scale(
-              scale: scale,
-              child: Text(
-                widget.syllables[index],
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-            );
-          }),
+        return Text(
+          widget.syllables[index],
+          style: GoogleFonts.outfit(
+            fontSize: isActive ? 52 : 48,
+            fontWeight: FontWeight.bold,
+            color: isActive
+                ? Color(0xFFE53935)
+                : isPast
+                ? Color(0xFF4A4A4A)
+                : Color(0xFF9E9E9E),
+          ),
         );
-      },
+      }),
     );
   }
 }

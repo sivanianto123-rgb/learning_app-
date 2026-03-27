@@ -5,6 +5,7 @@ import '../../widgets/home_screen_widgets/home_background.dart';
 import '../../widgets/home_screen_widgets/home_header.dart';
 import '../../widgets/home_screen_widgets/home_title.dart';
 import '../../widgets/home_screen_widgets/home_animaton.dart';
+import '../alpha_blocks/alpha_blocks_screen.dart';
 import '../module_screen/module_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,9 +17,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isMuted = false;
+  bool _isNavigating = false;
 
   List<bool> _firstSoundsCompleted = [];
-  List<bool> _longSoundsCompleted = [];
+  List<bool> _animalSoundsCompleted = [];
   List<bool> _combinationsCompleted = [];
   List<bool> _wordsCompleted = [];
 
@@ -33,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ModulesData.firstSounds.sounds.length,
       false,
     );
-    _longSoundsCompleted = List.filled(
+    _animalSoundsCompleted = List.filled(
       ModulesData.animalSounds.sounds.length,
       false,
     );
@@ -55,9 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
       'title': 'First Sounds',
       'progress': _calculateProgress(_firstSoundsCompleted),
     },
+    {'title': 'Alphablocks', 'progress': 0.0},
     {
-      'title': 'Animal sounds',
-      'progress': _calculateProgress(_longSoundsCompleted),
+      'title': 'Animal Sounds',
+      'progress': _calculateProgress(_animalSoundsCompleted),
     },
     {
       'title': 'Combinations',
@@ -67,57 +70,61 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   void _onModuleTap(int index) {
-    ModuleData moduleData;
-    List<bool> completedSounds;
-    Function(List<bool>) onUpdate;
+    if (_isNavigating) return;
+    _isNavigating = true;
+
+    Widget? screen;
 
     switch (index) {
       case 0:
-        moduleData = ModulesData.firstSounds;
-        completedSounds = _firstSoundsCompleted;
-        onUpdate = (list) => setState(() => _firstSoundsCompleted = list);
+        screen = ModuleScreen(
+          moduleData: ModulesData.firstSounds,
+          initialCompletedSounds: _firstSoundsCompleted,
+          onProgressUpdate: (list) =>
+              setState(() => _firstSoundsCompleted = list),
+        );
         break;
       case 1:
-        moduleData = ModulesData.animalSounds;
-        completedSounds = _longSoundsCompleted;
-        onUpdate = (list) => setState(() => _longSoundsCompleted = list);
+        screen = AlphablocksGame();
         break;
       case 2:
-        moduleData = ModulesData.combinations;
-        completedSounds = _combinationsCompleted;
-        onUpdate = (list) => setState(() => _combinationsCompleted = list);
+        if (ModulesData.animalSounds.sounds.isEmpty) {
+          _isNavigating = false;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Coming soon!')));
+          return;
+        }
+        screen = ModuleScreen(
+          moduleData: ModulesData.animalSounds,
+          initialCompletedSounds: _animalSoundsCompleted,
+          onProgressUpdate: (list) =>
+              setState(() => _animalSoundsCompleted = list),
+        );
         break;
       case 3:
-        moduleData = ModulesData.words;
-        completedSounds = _wordsCompleted;
-        onUpdate = (list) => setState(() => _wordsCompleted = list);
-        break;
-      default:
+      case 4:
+        _isNavigating = false;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Coming soon!')));
         return;
-    }
-
-    if (moduleData.sounds.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Coming soon!')));
-      return;
+      default:
+        _isNavigating = false;
+        return;
     }
 
     Navigator.push(
       context,
       PageRouteBuilder(
         opaque: true,
-        pageBuilder: (context, animation, secondaryAnimation) => ModuleScreen(
-          moduleData: moduleData,
-          initialCompletedSounds: completedSounds,
-          onProgressUpdate: onUpdate,
-        ),
+        pageBuilder: (context, animation, secondaryAnimation) => screen!,
         transitionDuration: Duration(milliseconds: 300),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
       ),
-    );
+    ).then((_) => _isNavigating = false);
   }
 
   void _onSettingsTap() {}

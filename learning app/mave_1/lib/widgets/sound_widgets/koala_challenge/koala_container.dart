@@ -1,49 +1,73 @@
+import 'dart:typed_data';
 import '../../../utils/common_imports/common_imports.dart';
 
-class KoalaContainer extends StatelessWidget {
-  final String animationPath;
-  final bool isFaded;
+class KoalaContainer extends StatefulWidget {
+  final bool isCorrect;
 
-  KoalaContainer({Key? key, required this.animationPath, required this.isFaded})
-    : super(key: key);
+  const KoalaContainer({Key? key, required this.isCorrect}) : super(key: key);
+
+  @override
+  State<KoalaContainer> createState() => _KoalaContainerState();
+}
+
+class _KoalaContainerState extends State<KoalaContainer> {
+  static const _happyPath = 'lib/assets/animations/Koala_happy.lottie';
+  static const _sadPath = 'lib/assets/animations/Koala_sad.lottie';
+
+  static Uint8List? _happyData;
+  static Uint8List? _sadData;
+
+  Uint8List? get _currentData => widget.isCorrect ? _happyData : _sadData;
+  String get _currentPath => widget.isCorrect ? _happyPath : _sadPath;
+
+  void _cacheData(Uint8List data) {
+    if (widget.isCorrect) {
+      _happyData = data;
+    } else {
+      _sadData = data;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.sizeOf(context).height;
 
     return AnimatedOpacity(
-      opacity: isFaded ? 0.3 : 1.0,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-      child: Container(
-        width: 150,
-        height: screenHeight * 0.3,
-        decoration: BoxDecoration(
-          color: Color(0xFFD9D9D9).withAlpha(217),
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Color(0xFFCCA7DA), width: 6),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: DotLottieLoader.fromAsset(
-            animationPath,
-            frameBuilder: (context, dotlottie) {
-              if (dotlottie != null) {
-                return Lottie.memory(
-                  dotlottie.animations.values.single,
-                  fit: BoxFit.contain,
-                  repeat: true,
-                );
-              }
-              return Center(
-                child: Text(
-                  isFaded ? '😢' : '😊',
-                  style: TextStyle(fontSize: 60),
-                ),
-              );
-            },
-          ),
-        ),
+      duration: const Duration(milliseconds: 400),
+      opacity: widget.isCorrect ? 1.0 : 0.5,
+      child: SizedBox(
+        height: screenHeight * 0.35,
+        child: _currentData != null
+            ? Lottie.memory(
+                _currentData!,
+                fit: BoxFit.contain,
+                repeat: true,
+                renderCache: RenderCache.raster,
+              )
+            : DotLottieLoader.fromAsset(
+                _currentPath,
+                frameBuilder: (context, dotlottie) {
+                  if (dotlottie != null) {
+                    final data = dotlottie.animations.values.single;
+
+                    if (_currentData == null) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          setState(() => _cacheData(data));
+                        }
+                      });
+                    }
+
+                    return Lottie.memory(
+                      data,
+                      fit: BoxFit.contain,
+                      repeat: true,
+                      renderCache: RenderCache.raster,
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
       ),
     );
   }
