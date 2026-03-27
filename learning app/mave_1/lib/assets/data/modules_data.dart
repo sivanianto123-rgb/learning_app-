@@ -51,7 +51,38 @@ class ModulesData {
 
   static ModuleData animalSounds = ModuleData(
     title: 'Animal Sounds',
-    sounds: [],
+    sounds: [
+      SoundData(
+        name: 'moo',
+        syllables: ['moo'],
+        audioPath: 'audio/moo.wav',
+        animationPath: 'lib/assets/images/cow.png',
+      ),
+      SoundData(
+        name: 'woof',
+        syllables: ['woof'],
+        audioPath: 'audio/woof.wav',
+        animationPath: 'lib/assets/images/dog.png',
+      ),
+      SoundData(
+        name: 'coo',
+        syllables: ['coo'],
+        audioPath: 'audio/coo.wav',
+        animationPath: 'lib/assets/images/pigeon.png',
+      ),
+      SoundData(
+        name: 'quack',
+        syllables: ['quack'],
+        audioPath: 'audio/quack.wav',
+        animationPath: 'lib/assets/images/duck.png',
+      ),
+      SoundData(
+        name: 'hiss',
+        syllables: ['hiss'],
+        audioPath: 'audio/hiss.wav',
+        animationPath: 'lib/assets/images/snake.png',
+      ),
+    ],
   );
 
   static ModuleData combinations = ModuleData(

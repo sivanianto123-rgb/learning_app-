@@ -1,3 +1,4 @@
+import 'dart:async';
 import '../../utils/common_imports/common_imports.dart';
 import '../../widgets/sound_widgets/animated_word.dart';
 import '../../widgets/sound_widgets/sound_lottie.dart';
@@ -5,12 +6,41 @@ import '../../widgets/sound_widgets/koala_challenge/koala_challenge.dart';
 import '../../widgets/back_button.dart';
 import 'package:soundpool/soundpool.dart';
 import 'package:flutter/services.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:speech_to_text/speech_to_text.dart';
+
+const _kBubbleDecoration = BoxDecoration(
+  color: Color(0xDFD9D9D9),
+  borderRadius: BorderRadius.all(Radius.circular(50)),
+  border: Border.fromBorderSide(BorderSide(color: Color(0xFFCCA7DA), width: 6)),
+);
+
+// Lenient match alternatives for toddler/baby speech patterns.
+// Keys are the canonical sound name; values are accepted approximations.
+const _kAlternatives = <String, List<String>>{
+  'mama': ['ma', 'mom', 'mum', 'mommy', 'mamma'],
+  'papa': ['pa', 'pop', 'pap', 'poppy', 'daddy'],
+  'dada': ['da', 'dad', 'daddy', 'dah'],
+  'baba': ['ba', 'bob', 'bab', 'baby'],
+  'ooo': ['o', 'oh', 'ooh', 'oo', 'who'],
+  'eee': ['e', 'ee', 'eh', 'he', 'hee', 'yeah'],
+  'aaaa': ['a', 'aa', 'ah', 'aah', 'ha'],
+  'moo': ['mu', 'muu', 'mooo', 'mow'],
+  'woof': ['wuf', 'wof', 'oof', 'ruff'],
+  'coo': ['cu', 'co', 'coup'],
+  'quack': ['quak', 'kwak', 'quac', 'kwack'],
+  'hiss': ['his', 'hisss', 'iss'],
+};
+
+// How long the mic stays open each round.
+const _kListenDuration = Duration(seconds: 5);
+
+// Max play-and-listen rounds before auto-advancing to the challenge.
+const _kMaxRounds = 3;
 
 class SoundScreen extends StatefulWidget {
   final SoundData soundData;
 
-  SoundScreen({Key? key, required this.soundData}) : super(key: key);
+  const SoundScreen({super.key, required this.soundData});
 
   @override
   State<SoundScreen> createState() => _SoundScreenState();
@@ -23,43 +53,20 @@ class _SoundScreenState extends State<SoundScreen> {
   bool _isCorrect = false;
   bool _isDisposed = false;
   bool _isNavigating = false;
-  double _accuracy = 0.0;
+  int _roundCount = 0;
 
   Soundpool? _soundpool;
   int? _soundId;
   int? _streamId;
-  stt.SpeechToText? _speech;
-  bool _isSpeechReady = false;
 
-  final Map<String, List<String>> _alternativeMatches = {
-    'ooo': ['o', 'oh', 'ooh', 'oo', 'ohh', 'who', 'oooh', 'whoa'],
-    'eee': ['e', 'ee', 'eh', 'eeh', 'he', 'hee', 'yeah', 'yee', 'yi'],
-    'aaaa': ['a', 'aa', 'ah', 'aah', 'ahh', 'ha', 'haa'],
-    'mama': ['ma', 'mom', 'mum', 'mam', 'mommy', 'mummy', 'mamma'],
-    'papa': ['pa', 'pop', 'pap', 'poppy', 'pappa', 'daddy'],
-    'dada': ['da', 'dad', 'daddy', 'dah'],
-    'baba': ['ba', 'bob', 'bab', 'baby'],
-    'moo': ['mo', 'muu', 'mu', 'mooo', 'mow', 'mou'],
-    'baa': ['ba', 'bah', 'baah', 'beh'],
-    'meow': ['mow', 'mao', 'me', 'mew', 'meou', 'miao', 'miaow'],
-    'woof': ['woo', 'oof', 'wu', 'wuf', 'wuff', 'ruff', 'arf', 'bow', 'bowwow'],
-    'quack': [
-      'qua',
-      'kwa',
-      'kwak',
-      'wack',
-      'ack',
-      'kak',
-      'ka',
-      'wa',
-      'qu',
-      'quak',
-      'duck',
-      'qwak',
-    ],
-    'oink': ['oi', 'oik', 'oing', 'ink', 'oynk', 'pig'],
-    'neigh': ['nay', 'neh', 'nee', 'nay', 'nai', 'horse', 'hay'],
-  };
+  final SpeechToText _stt = SpeechToText();
+  bool _sttAvailable = false;
+  bool _isListening = false;
+
+  double? _cachedScreenHeight;
+
+  // Total animation duration: 500 ms per syllable + 500 ms trailing pause.
+  int get _audioDurationMs => widget.soundData.syllables.length * 500 + 500;
 
   @override
   void initState() {
@@ -67,42 +74,22 @@ class _SoundScreenState extends State<SoundScreen> {
     _initAll();
   }
 
-  Future<void> _initAll() async {
-    await _initAudio();
-    await _initSpeech();
-
-    if (mounted && !_isDisposed) {
-      await Future.delayed(Duration(milliseconds: 500));
-      _playAudioAndAnimate();
-      await Future.delayed(Duration(milliseconds: 1500));
-      if (mounted && !_isDisposed) {
-        _startListening();
-      }
-    }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(const AssetImage('lib/assets/images/sound_bg.jpg'), context);
+    _cachedScreenHeight = MediaQuery.sizeOf(context).height;
   }
 
-  Future<void> _initSpeech() async {
-    _speech = stt.SpeechToText();
-    try {
-      _isSpeechReady = await _speech!.initialize(
-        onStatus: (status) {
-          if (status == 'done' || status == 'notListening') {
-            if (mounted &&
-                !_isDisposed &&
-                !_showKoalaChallenge &&
-                _accuracy < 0.5) {
-              Future.delayed(Duration(milliseconds: 500), () {
-                if (mounted && !_isDisposed && !_showKoalaChallenge) {
-                  _startListening();
-                }
-              });
-            }
-          }
-        },
-        onError: (error) {},
-      );
-    } catch (e) {
-      _isSpeechReady = false;
+  // ─── Initialisation ──────────────────────────────────────────────────────
+
+  Future<void> _initAll() async {
+    // Load audio and initialise STT in parallel so startup is faster.
+    await Future.wait([_initAudio(), _initStt()]);
+
+    if (mounted && !_isDisposed) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      _runLoop();
     }
   }
 
@@ -110,16 +97,156 @@ class _SoundScreenState extends State<SoundScreen> {
     if (widget.soundData.audioPath.isEmpty) return;
     try {
       _soundpool = Soundpool.fromOptions(
-        options: SoundpoolOptions(streamType: StreamType.music),
+        options: const SoundpoolOptions(streamType: StreamType.music),
       );
-      ByteData data = await rootBundle.load(widget.soundData.audioPath);
+      final data = await rootBundle.load(widget.soundData.audioPath);
       _soundId = await _soundpool!.load(data);
-    } catch (e) {}
+    } catch (_) {}
   }
 
-  void _safeSetState(VoidCallback fn) {
-    if (mounted && !_isDisposed) setState(fn);
+  Future<void> _initStt() async {
+    try {
+      _sttAvailable = await _stt.initialize(
+        onError: (_) {},
+        onStatus: (status) {
+          if (!mounted || _isDisposed) return;
+          if (status == 'done' || status == 'notListening') {
+            _isListening = false;
+          }
+        },
+      );
+    } catch (_) {
+      _sttAvailable = false;
+    }
   }
+
+  // ─── Main loop ────────────────────────────────────────────────────────────
+
+  // Each round:
+  //   1. Play audio + animate syllables (audio session = playback only).
+  //   2. Wait for audio to finish and for the audio session to settle.
+  //   3. Open mic and listen for _kListenDuration (audio session = record only).
+  //   4. If match → KoalaChallenge (happy koala).
+  //   5. If no match and more rounds remain → repeat.
+  //   6. If no match after _kMaxRounds → KoalaChallenge anyway (sad koala).
+  //
+  // Audio and mic are intentionally never active at the same time, which
+  // prevents the AVAudioSession conflict that caused lag on iOS.
+  Future<void> _runLoop() async {
+    if (_isDisposed || _showKoalaChallenge) return;
+
+    _roundCount++;
+
+    // 1 & 2: Play audio and animate.  No mic is open during this phase.
+    _playAudioAndAnimate();
+    await Future.delayed(Duration(milliseconds: _audioDurationMs));
+    if (_isDisposed || _showKoalaChallenge) return;
+
+    // Short settling pause before switching audio session to record.
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (_isDisposed || _showKoalaChallenge) return;
+
+    // 3: Open mic.  No audio playback during this phase.
+    await _listenForMatch();
+    if (_isDisposed || _showKoalaChallenge) return;
+
+    // 5: Auto-advance after enough failed rounds.
+    if (_roundCount >= _kMaxRounds) {
+      _goToKoalaChallenge(correct: false);
+      return;
+    }
+
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!_isDisposed && !_showKoalaChallenge) _runLoop();
+  }
+
+  // ─── Speech recognition ──────────────────────────────────────────────────
+
+  // Opens the mic for [_kListenDuration].  Calls _goToKoalaChallenge on match.
+  // If STT is unavailable the method waits the same duration so loop timing
+  // stays consistent.
+  Future<void> _listenForMatch() async {
+    if (_isDisposed) return;
+
+    if (!_sttAvailable) {
+      // No mic available: wait the same window so auto-advance timing is sane.
+      await Future.delayed(_kListenDuration);
+      return;
+    }
+
+    final completer = Completer<void>();
+
+    _isListening = true;
+    _stt.listen(
+      onResult: (result) {
+        if (_isDisposed || _showKoalaChallenge || completer.isCompleted) return;
+        if (_isMatch(result.recognizedWords)) {
+          // Match found: stop mic before touching UI state.
+          _isListening = false;
+          try {
+            _stt.stop();
+          } catch (_) {}
+          if (!_isDisposed && !_showKoalaChallenge) {
+            _goToKoalaChallenge(correct: true);
+          }
+          if (!completer.isCompleted) completer.complete();
+        }
+      },
+      listenFor: _kListenDuration,
+      // Stop after 3 s of silence so we don't hold the mic open needlessly.
+      pauseFor: const Duration(seconds: 3),
+      listenOptions: SpeechListenOptions(
+        partialResults: true,
+        cancelOnError: true,
+      ),
+    );
+
+    // Wait for a match or the listen window to expire.
+    await Future.any([
+      completer.future,
+      Future.delayed(_kListenDuration),
+    ]);
+
+    if (!completer.isCompleted) completer.complete();
+
+    // Always clean up the mic before returning.
+    if (_isListening) {
+      _isListening = false;
+      try {
+        _stt.stop();
+      } catch (_) {}
+    }
+  }
+
+  void _stopListening() {
+    if (!_isListening) return;
+    _isListening = false;
+    try {
+      _stt.stop();
+    } catch (_) {}
+  }
+
+  // Lenient matching: accept the canonical name, any listed alternative, or
+  // any individual syllable.  Works well for toddler approximations.
+  bool _isMatch(String recognized) {
+    if (recognized.isEmpty) return false;
+    final input = recognized.toLowerCase().trim();
+    final target = widget.soundData.name.toLowerCase();
+
+    if (input.contains(target)) return true;
+
+    for (final alt in (_kAlternatives[target] ?? [])) {
+      if (input.contains(alt)) return true;
+    }
+
+    for (final syl in widget.soundData.syllables) {
+      if (input.contains(syl.toLowerCase())) return true;
+    }
+
+    return false;
+  }
+
+  // ─── Audio playback ───────────────────────────────────────────────────────
 
   void _playAudioAndAnimate() {
     if (_isDisposed) return;
@@ -130,98 +257,14 @@ class _SoundScreenState extends State<SoundScreen> {
     _playAudio();
   }
 
-  Future<void> _startListening() async {
-    if (!_isSpeechReady ||
-        _speech == null ||
-        _isDisposed ||
-        _showKoalaChallenge) {
-      return;
-    }
-
-    try {
-      await _speech!.listen(
-        onResult: (result) {
-          if (_isDisposed || _showKoalaChallenge) return;
-          if (result.recognizedWords.isNotEmpty) {
-            _processVoiceResult(result.recognizedWords);
-          }
-        },
-        listenFor: Duration(seconds: 20),
-        pauseFor: Duration(seconds: 3),
-        listenMode: stt.ListenMode.dictation,
-        cancelOnError: false,
-        partialResults: true,
-      );
-    } catch (e) {}
-  }
-
-  void _processVoiceResult(String spokenWords) {
-    if (_isDisposed || _showKoalaChallenge) return;
-
-    String spoken = spokenWords.toLowerCase().replaceAll(' ', '').trim();
-    String target = widget.soundData.name
-        .toLowerCase()
-        .replaceAll(' ', '')
-        .trim();
-
-    double currentAccuracy = _calculateBabySpeechAccuracy(spoken, target);
-
-    if (currentAccuracy > _accuracy) {
-      _accuracy = currentAccuracy;
-    }
-
-    if (_accuracy >= 0.5) {
-      _goToKoalaChallenge();
-    }
-  }
-
-  double _calculateBabySpeechAccuracy(String spoken, String target) {
-    if (spoken.isEmpty || target.isEmpty) return 0.0;
-
-    if (spoken == target ||
-        spoken.contains(target) ||
-        target.contains(spoken)) {
-      return 1.0;
-    }
-
-    List<String>? alternatives = _alternativeMatches[target];
-    if (alternatives != null) {
-      for (var alt in alternatives) {
-        if (spoken.contains(alt) || spoken == alt) {
-          return 0.9;
-        }
-      }
-    }
-
-    for (var syllable in widget.soundData.syllables) {
-      String syl = syllable.toLowerCase();
-      if (spoken.contains(syl)) {
-        return 0.8;
-      }
-      if (syl.isNotEmpty && spoken.contains(syl[0])) {
-        return 0.5;
-      }
-    }
-
-    if (target.isNotEmpty && spoken.contains(target[0])) {
-      return 0.3;
-    }
-
-    return 0.0;
-  }
-
-  Future<void> _stopListening() async {
-    try {
-      await _speech?.stop();
-    } catch (e) {}
-  }
-
   Future<void> _playAudio() async {
     if (_isDisposed || _soundpool == null || _soundId == null) return;
     try {
       _streamId = await _soundpool!.play(_soundId!);
-    } catch (e) {}
+    } catch (_) {}
   }
+
+  // ─── UI callbacks ─────────────────────────────────────────────────────────
 
   void _onSyllableComplete() {
     if (_isDisposed) return;
@@ -232,78 +275,57 @@ class _SoundScreenState extends State<SoundScreen> {
     }
   }
 
-  Future<void> _goToKoalaChallenge() async {
+  Future<void> _onScreenTap() async {
+    if (_showKoalaChallenge || _isAnimating) return;
+    _playAudioAndAnimate();
+  }
+
+  void _goToKoalaChallenge({required bool correct}) {
     if (_isDisposed || _showKoalaChallenge) return;
-    await _stopListening();
+    _stopListening();
     _safeSetState(() {
       _showKoalaChallenge = true;
-      _isCorrect = false;
+      _isCorrect = correct;
     });
   }
 
-  void _onKoalaVoiceResult(String spokenWord) {
-    if (_isDisposed) return;
-    String spoken = spokenWord.toLowerCase().replaceAll(' ', '');
-    String target = widget.soundData.name.toLowerCase();
-
-    bool isMatch = spoken.contains(target) || target.contains(spoken);
-
-    if (!isMatch) {
-      List<String>? alternatives = _alternativeMatches[target];
-      if (alternatives != null) {
-        for (var alt in alternatives) {
-          if (spoken.contains(alt)) {
-            isMatch = true;
-            break;
-          }
-        }
+  void _onKoalaComplete() {
+    // Always end with the happy koala before navigating back.
+    _safeSetState(() => _isCorrect = true);
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted && !_isDisposed && !_isNavigating) {
+        _onBack(completed: true);
       }
-    }
-
-    if (!isMatch) {
-      for (var syllable in widget.soundData.syllables) {
-        if (spoken.contains(syllable.toLowerCase())) {
-          isMatch = true;
-          break;
-        }
-      }
-    }
-
-    if (isMatch) {
-      _safeSetState(() => _isCorrect = true);
-      Future.delayed(Duration(seconds: 2), () {
-        if (mounted && !_isDisposed && !_isNavigating) {
-          _onBack(completed: true);
-        }
-      });
-    }
-  }
-
-  Future<void> _onScreenTap() async {
-    if (_showKoalaChallenge) return;
-    _playAudioAndAnimate();
+    });
   }
 
   Future<void> _onBack({bool completed = false}) async {
     if (_isNavigating || _isDisposed) return;
     _isNavigating = true;
-    await _stopListening();
+    _stopListening();
     try {
       if (_streamId != null && _streamId! > 0) {
         await _soundpool?.stop(_streamId!);
       }
-    } catch (e) {}
+    } catch (_) {}
     if (mounted) Navigator.pop(context, completed);
   }
+
+  void _safeSetState(VoidCallback fn) {
+    if (mounted && !_isDisposed) setState(fn);
+  }
+
+  // ─── Lifecycle ────────────────────────────────────────────────────────────
 
   @override
   void dispose() {
     _isDisposed = true;
-    _speech?.stop();
-    _speech?.cancel();
+    _stopListening();
     _soundpool?.dispose();
     super.dispose();
   }
+
+  // ─── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -315,26 +337,20 @@ class _SoundScreenState extends State<SoundScreen> {
       child: Scaffold(
         body: GestureDetector(
           onTap: _onScreenTap,
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
+          child: SizedBox.expand(
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(
-                  'lib/assets/images/sound_bg.jpg',
-                  fit: BoxFit.cover,
-                  gaplessPlayback: true,
-                ),
+                const RepaintBoundary(child: _BackgroundImage()),
                 SafeArea(
                   child: AnimatedSwitcher(
-                    duration: Duration(milliseconds: 400),
+                    duration: const Duration(milliseconds: 400),
                     child: _showKoalaChallenge
                         ? KoalaChallenge(
-                            key: ValueKey('koala'),
+                            key: const ValueKey('koala'),
                             sound: widget.soundData.name,
                             isCorrect: _isCorrect,
-                            onVoiceResult: _onKoalaVoiceResult,
+                            onComplete: _onKoalaComplete,
                             onBack: () => _onBack(completed: false),
                           )
                         : _buildWordAnimation(),
@@ -349,50 +365,56 @@ class _SoundScreenState extends State<SoundScreen> {
   }
 
   Widget _buildWordAnimation() {
-    var screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight =
+        _cachedScreenHeight ?? MediaQuery.sizeOf(context).height;
 
     return Column(
-      key: ValueKey('word'),
+      key: const ValueKey('word'),
       children: [
-        _buildHeader(),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              AppBackButton(onPressed: () => _onBack(completed: false)),
+            ],
+          ),
+        ),
         SizedBox(height: screenHeight * 0.02),
-        _buildWordContainer(),
+        Container(
+          width: 400,
+          height: 120,
+          decoration: _kBubbleDecoration,
+          child: Center(
+            child: AnimatedWord(
+              syllables: widget.soundData.syllables,
+              currentIndex: _currentSyllableIndex,
+              isAnimating: _isAnimating,
+              onSyllableComplete: _onSyllableComplete,
+            ),
+          ),
+        ),
         Expanded(
           child: Center(
-            child: SoundLottie(animationPath: widget.soundData.animationPath),
+            child: RepaintBoundary(
+              child: SoundLottie(animationPath: widget.soundData.animationPath),
+            ),
           ),
         ),
         SizedBox(height: screenHeight * 0.05),
       ],
     );
   }
+}
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: Row(
-        children: [AppBackButton(onPressed: () => _onBack(completed: false))],
-      ),
-    );
-  }
+class _BackgroundImage extends StatelessWidget {
+  const _BackgroundImage();
 
-  Widget _buildWordContainer() {
-    return Container(
-      width: 400,
-      height: 120,
-      decoration: BoxDecoration(
-        color: Color(0xFFD9D9D9).withAlpha(230),
-        borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: Color(0xFFCCA7DA), width: 6),
-      ),
-      child: Center(
-        child: AnimatedWord(
-          syllables: widget.soundData.syllables,
-          currentIndex: _currentSyllableIndex,
-          isAnimating: _isAnimating,
-          onSyllableComplete: _onSyllableComplete,
-        ),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'lib/assets/images/sound_bg.jpg',
+      fit: BoxFit.cover,
+      gaplessPlayback: true,
     );
   }
 }

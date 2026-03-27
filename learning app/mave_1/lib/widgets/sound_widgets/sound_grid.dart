@@ -1,5 +1,5 @@
 import '../../../utils/common_imports/common_imports.dart';
-import '../module_template_widget/threed_sound_card.dart';
+import '../module_template_widget/types_of_sounds.dart';
 
 class SoundGrid extends StatelessWidget {
   final List<String> sounds;

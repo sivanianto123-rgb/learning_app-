@@ -3,7 +3,7 @@ import '../utils/common_imports/common_imports.dart';
 class AppBackButton extends StatefulWidget {
   final VoidCallback onPressed;
 
-  AppBackButton({Key? key, required this.onPressed}) : super(key: key);
+  const AppBackButton({Key? key, required this.onPressed}) : super(key: key);
 
   @override
   State<AppBackButton> createState() => _AppBackButtonState();
@@ -11,6 +11,12 @@ class AppBackButton extends StatefulWidget {
 
 class _AppBackButtonState extends State<AppBackButton> {
   bool _isPressed = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(const AssetImage('lib/assets/icons/back.png'), context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +28,14 @@ class _AppBackButtonState extends State<AppBackButton> {
       },
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedOpacity(
-        duration: Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 100),
         opacity: _isPressed ? 0.6 : 1.0,
-        child: Image.asset('lib/assets/icons/back.png', width: 50, height: 50),
+        child: Image.asset(
+          'lib/assets/icons/back.png',
+          width: 50,
+          height: 50,
+          gaplessPlayback: true,
+        ),
       ),
     );
   }

@@ -64,10 +64,21 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    # Images
     - lib/assets/images/home_back.jpg
     - lib/assets/images/module_background.jpg
     - lib/assets/images/sound_bg.jpg
     - lib/assets/images/first_s.jpg
+    - lib/assets/images/splash_logo.png
+
+    # Animal PNGs
+    - lib/assets/images/cow.png
+    - lib/assets/images/dog.png
+    - lib/assets/images/pigeon.png
+    - lib/assets/images/duck.png
+    - lib/assets/images/snake.png
+
+    # Lottie animations
     - lib/assets/animations/splash.lottie
     - lib/assets/animations/tiger.lottie
     - lib/assets/animations/mama.lottie
@@ -79,12 +90,15 @@ flutter:
     - lib/assets/animations/Koala_laughing.lottie
     - lib/assets/animations/koala_eat.lottie
     - lib/assets/animations/koala_hungry.lottie
+
+    # Icons
     - lib/assets/icons/up.png
     - lib/assets/icons/down.png
     - lib/assets/icons/back.png
     - lib/assets/icons/music.png
     - lib/assets/icons/settings.svg
 
+    # Audio
     - audio/mama.wav
     - audio/papa.wav
     - audio/dada.wav
@@ -93,7 +107,11 @@ flutter:
     - audio/ooo.wav
     - audio/eee.wav
 
-  #   - images/a_dot_ham.jpeg
+    - audio/moo.wav
+    - audio/woof.wav
+    - audio/coo.wav
+    - audio/quack.wav
+    - audio/hiss.wav
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
