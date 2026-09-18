@@ -50,7 +50,7 @@ class _SoundLottieState extends State<SoundLottie> {
           _cachedData!,
           fit: BoxFit.contain,
           repeat: true,
-          renderCache: RenderCache.raster,
+          renderCache: RenderCache.drawingCommands,
         ),
       );
     }
@@ -78,7 +78,7 @@ class _SoundLottieState extends State<SoundLottie> {
               data,
               fit: BoxFit.contain,
               repeat: true,
-              renderCache: RenderCache.raster,
+              renderCache: RenderCache.drawingCommands,
             );
           }
           return const SizedBox.shrink();

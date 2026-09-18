@@ -7,6 +7,7 @@ import '../../widgets/back_button.dart';
 import 'package:soundpool/soundpool.dart';
 import 'package:flutter/services.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 
 const _kBubbleDecoration = BoxDecoration(
   color: Color(0xDFD9D9D9),
@@ -14,8 +15,6 @@ const _kBubbleDecoration = BoxDecoration(
   border: Border.fromBorderSide(BorderSide(color: Color(0xFFCCA7DA), width: 6)),
 );
 
-// Lenient match alternatives for toddler/baby speech patterns.
-// Keys are the canonical sound name; values are accepted approximations.
 const _kAlternatives = <String, List<String>>{
   'mama': ['ma', 'mom', 'mum', 'mommy', 'mamma'],
   'papa': ['pa', 'pop', 'pap', 'poppy', 'daddy'],
@@ -31,11 +30,10 @@ const _kAlternatives = <String, List<String>>{
   'hiss': ['his', 'hisss', 'iss'],
 };
 
-// How long the mic stays open each round.
 const _kListenDuration = Duration(seconds: 5);
 
-// Max play-and-listen rounds before auto-advancing to the challenge.
-const _kMaxRounds = 3;
+// Lenient threshold for toddler voices — any genuine phonetic attempt passes.
+const _kAccuracyThreshold = 0.40;
 
 class SoundScreen extends StatefulWidget {
   final SoundData soundData;
@@ -53,7 +51,9 @@ class _SoundScreenState extends State<SoundScreen> {
   bool _isCorrect = false;
   bool _isDisposed = false;
   bool _isNavigating = false;
-  int _roundCount = 0;
+
+  // Whether the mic toggle is currently active (baby is speaking).
+  bool _isMicActive = false;
 
   Soundpool? _soundpool;
   int? _soundId;
@@ -63,9 +63,13 @@ class _SoundScreenState extends State<SoundScreen> {
   bool _sttAvailable = false;
   bool _isListening = false;
 
+  // Completed to interrupt _listenForMatch immediately (toggle-off or back).
+  Completer<void>? _listenCancelCompleter;
+
+  String _transcript = '';
+
   double? _cachedScreenHeight;
 
-  // Total animation duration: 500 ms per syllable + 500 ms trailing pause.
   int get _audioDurationMs => widget.soundData.syllables.length * 500 + 500;
 
   @override
@@ -84,12 +88,10 @@ class _SoundScreenState extends State<SoundScreen> {
   // ─── Initialisation ──────────────────────────────────────────────────────
 
   Future<void> _initAll() async {
-    // Load audio and initialise STT in parallel so startup is faster.
     await Future.wait([_initAudio(), _initStt()]);
-
     if (mounted && !_isDisposed) {
       await Future.delayed(const Duration(milliseconds: 300));
-      _runLoop();
+      _startSession();
     }
   }
 
@@ -110,8 +112,10 @@ class _SoundScreenState extends State<SoundScreen> {
         onError: (_) {},
         onStatus: (status) {
           if (!mounted || _isDisposed) return;
-          if (status == 'done' || status == 'notListening') {
-            _isListening = false;
+          if (status == 'listening') {
+            _safeSetState(() => _isListening = true);
+          } else if (status == 'done' || status == 'notListening') {
+            _safeSetState(() => _isListening = false);
           }
         },
       );
@@ -120,80 +124,86 @@ class _SoundScreenState extends State<SoundScreen> {
     }
   }
 
-  // ─── Main loop ────────────────────────────────────────────────────────────
+  // ─── Session ──────────────────────────────────────────────────────────────
 
-  // Each round:
-  //   1. Play audio + animate syllables (audio session = playback only).
-  //   2. Wait for audio to finish and for the audio session to settle.
-  //   3. Open mic and listen for _kListenDuration (audio session = record only).
-  //   4. If match → KoalaChallenge (happy koala).
-  //   5. If no match and more rounds remain → repeat.
-  //   6. If no match after _kMaxRounds → KoalaChallenge anyway (sad koala).
-  //
-  // Audio and mic are intentionally never active at the same time, which
-  // prevents the AVAudioSession conflict that caused lag on iOS.
-  Future<void> _runLoop() async {
-    if (_isDisposed || _showKoalaChallenge) return;
-
-    _roundCount++;
-
-    // 1 & 2: Play audio and animate.  No mic is open during this phase.
+  // Plays the word audio once when the screen opens.
+  // Listening is manual — the baby taps the mic button to speak.
+  void _startSession() {
     _playAudioAndAnimate();
-    await Future.delayed(Duration(milliseconds: _audioDurationMs));
-    if (_isDisposed || _showKoalaChallenge) return;
+  }
 
-    // Short settling pause before switching audio session to record.
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (_isDisposed || _showKoalaChallenge) return;
+  // ─── Mic toggle ───────────────────────────────────────────────────────────
 
-    // 3: Open mic.  No audio playback during this phase.
-    await _listenForMatch();
-    if (_isDisposed || _showKoalaChallenge) return;
+  Future<void> _onMicTap() async {
+    if (_showKoalaChallenge) return;
 
-    // 5: Auto-advance after enough failed rounds.
-    if (_roundCount >= _kMaxRounds) {
-      _goToKoalaChallenge(correct: false);
+    if (_isMicActive) {
+      // Toggle OFF — stop listening immediately.
+      _stopListening();
+      _safeSetState(() => _isMicActive = false);
       return;
     }
 
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (!_isDisposed && !_showKoalaChallenge) _runLoop();
+    // Toggle ON — stop any currently playing audio first so audio and mic
+    // never run simultaneously (AVAudioSession conflict on iOS).
+    if (_streamId != null && _streamId! > 0) {
+      _soundpool?.stop(_streamId!);
+      _streamId = null;
+    }
+    _safeSetState(() {
+      _isMicActive = true;
+      _isAnimating = false; // freeze syllable animation while listening
+    });
+
+    await _listenForMatch();
+
+    // Listen window expired without a successful match.
+    if (!_isDisposed && !_showKoalaChallenge) {
+      _safeSetState(() => _isMicActive = false);
+    }
   }
 
   // ─── Speech recognition ──────────────────────────────────────────────────
 
-  // Opens the mic for [_kListenDuration].  Calls _goToKoalaChallenge on match.
-  // If STT is unavailable the method waits the same duration so loop timing
-  // stays consistent.
   Future<void> _listenForMatch() async {
     if (_isDisposed) return;
 
+    _listenCancelCompleter = Completer<void>();
+
     if (!_sttAvailable) {
-      // No mic available: wait the same window so auto-advance timing is sane.
-      await Future.delayed(_kListenDuration);
+      await Future.any([
+        Future.delayed(_kListenDuration),
+        _listenCancelCompleter!.future,
+      ]);
+      _listenCancelCompleter = null;
       return;
     }
 
-    final completer = Completer<void>();
+    final matchCompleter = Completer<void>();
 
-    _isListening = true;
     _stt.listen(
       onResult: (result) {
-        if (_isDisposed || _showKoalaChallenge || completer.isCompleted) return;
-        if (_isMatch(result.recognizedWords)) {
-          // Match found: stop mic before touching UI state.
-          _isListening = false;
+        if (_isDisposed || _showKoalaChallenge || matchCompleter.isCompleted) {
+          return;
+        }
+
+        final words = result.recognizedWords;
+        final accuracy = _computeAccuracy(result);
+
+        _safeSetState(() => _transcript = words);
+
+        if (accuracy >= _kAccuracyThreshold) {
+          _safeSetState(() => _isListening = false);
           try {
             _stt.stop();
           } catch (_) {}
           if (!_isDisposed && !_showKoalaChallenge) {
             _goToKoalaChallenge(correct: true);
           }
-          if (!completer.isCompleted) completer.complete();
+          if (!matchCompleter.isCompleted) matchCompleter.complete();
         }
       },
       listenFor: _kListenDuration,
-      // Stop after 3 s of silence so we don't hold the mic open needlessly.
       pauseFor: const Duration(seconds: 3),
       listenOptions: SpeechListenOptions(
         partialResults: true,
@@ -201,17 +211,17 @@ class _SoundScreenState extends State<SoundScreen> {
       ),
     );
 
-    // Wait for a match or the listen window to expire.
     await Future.any([
-      completer.future,
+      matchCompleter.future,
+      _listenCancelCompleter!.future,
       Future.delayed(_kListenDuration),
     ]);
 
-    if (!completer.isCompleted) completer.complete();
+    if (!matchCompleter.isCompleted) matchCompleter.complete();
+    _listenCancelCompleter = null;
 
-    // Always clean up the mic before returning.
     if (_isListening) {
-      _isListening = false;
+      _safeSetState(() => _isListening = false);
       try {
         _stt.stop();
       } catch (_) {}
@@ -219,40 +229,54 @@ class _SoundScreenState extends State<SoundScreen> {
   }
 
   void _stopListening() {
-    if (!_isListening) return;
+    if (_listenCancelCompleter != null &&
+        !_listenCancelCompleter!.isCompleted) {
+      _listenCancelCompleter!.complete();
+    }
+    _listenCancelCompleter = null;
     _isListening = false;
     try {
       _stt.stop();
     } catch (_) {}
   }
 
-  // Lenient matching: accept the canonical name, any listed alternative, or
-  // any individual syllable.  Works well for toddler approximations.
-  bool _isMatch(String recognized) {
-    if (recognized.isEmpty) return false;
-    final input = recognized.toLowerCase().trim();
-    final target = widget.soundData.name.toLowerCase();
+  // Lenient accuracy for toddlers — any genuine phonetic attempt passes.
+  // Reported confidence is clamped to min 0.50; absent confidence defaults
+  // to 0.80 because toddler voices frequently get low or null scores.
+  double _computeAccuracy(SpeechRecognitionResult result) {
+    final recognized = result.recognizedWords.toLowerCase().trim();
+    if (recognized.isEmpty) return 0.0;
 
-    if (input.contains(target)) return true;
+    final target = widget.soundData.name.toLowerCase();
+    final rawConf = result.confidence;
+    final confidence = rawConf > 0 ? rawConf.clamp(0.5, 1.0) : 0.8;
+
+    if (recognized.contains(target)) return confidence;
 
     for (final alt in (_kAlternatives[target] ?? [])) {
-      if (input.contains(alt)) return true;
+      if (recognized.contains(alt)) return confidence * 0.95;
     }
 
     for (final syl in widget.soundData.syllables) {
-      if (input.contains(syl.toLowerCase())) return true;
+      if (recognized.contains(syl.toLowerCase())) return confidence * 0.85;
     }
 
-    return false;
+    return 0.0;
   }
 
   // ─── Audio playback ───────────────────────────────────────────────────────
 
   void _playAudioAndAnimate() {
     if (_isDisposed) return;
+    if (_streamId != null && _streamId! > 0) {
+      _soundpool?.stop(_streamId!);
+      _streamId = null;
+    }
     _safeSetState(() {
       _isAnimating = true;
       _currentSyllableIndex = 0;
+      _transcript = '';
+      _isMicActive = false;
     });
     _playAudio();
   }
@@ -275,8 +299,10 @@ class _SoundScreenState extends State<SoundScreen> {
     }
   }
 
+  // Tapping anywhere (outside the mic button) replays the audio.
+  // Ignored while mic is active to avoid audio/mic overlap.
   Future<void> _onScreenTap() async {
-    if (_showKoalaChallenge || _isAnimating) return;
+    if (_showKoalaChallenge || _isMicActive) return;
     _playAudioAndAnimate();
   }
 
@@ -286,11 +312,11 @@ class _SoundScreenState extends State<SoundScreen> {
     _safeSetState(() {
       _showKoalaChallenge = true;
       _isCorrect = correct;
+      _isMicActive = false;
     });
   }
 
   void _onKoalaComplete() {
-    // Always end with the happy koala before navigating back.
     _safeSetState(() => _isCorrect = true);
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted && !_isDisposed && !_isNavigating) {
@@ -396,15 +422,243 @@ class _SoundScreenState extends State<SoundScreen> {
         Expanded(
           child: Center(
             child: RepaintBoundary(
-              child: SoundLottie(animationPath: widget.soundData.animationPath),
+              child: SoundLottie(
+                animationPath: widget.soundData.animationPath,
+              ),
             ),
           ),
         ),
-        SizedBox(height: screenHeight * 0.05),
+        _buildMicSection(),
+        SizedBox(height: screenHeight * 0.03),
       ],
     );
   }
+
+  Widget _buildMicSection() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Hand tap hint — bounces to show the baby where to tap.
+        // Fades out while mic is active.
+        AnimatedOpacity(
+          duration: const Duration(milliseconds: 250),
+          opacity: _isMicActive ? 0.0 : 1.0,
+          child: const SizedBox(
+            height: 48,
+            child: _HandTapHint(),
+          ),
+        ),
+        const SizedBox(height: 4),
+        // Mic toggle button.
+        GestureDetector(
+          onTap: _onMicTap,
+          child: _MicButton(isActive: _isMicActive),
+        ),
+        const SizedBox(height: 10),
+        // Live transcript bubble.
+        _buildTranscript(),
+      ],
+    );
+  }
+
+  Widget _buildTranscript() {
+    final visible = _isListening || _transcript.isNotEmpty;
+    if (!visible) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(220),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFCCA7DA), width: 2),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_isListening)
+            const Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: Icon(Icons.mic, color: Colors.green, size: 18),
+            ),
+          Flexible(
+            child: Text(
+              _transcript.isEmpty ? 'Listening...' : '"$_transcript"',
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                color: _transcript.isEmpty
+                    ? Colors.grey
+                    : const Color(0xFF4A4A4A),
+                fontStyle: _transcript.isEmpty
+                    ? FontStyle.normal
+                    : FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+
+// ─── Hand tap hint ────────────────────────────────────────────────────────────
+//
+// Animated pointing-hand icon that bounces downward to hint the baby to tap
+// the mic button below it.
+
+class _HandTapHint extends StatefulWidget {
+  const _HandTapHint();
+
+  @override
+  State<_HandTapHint> createState() => _HandTapHintState();
+}
+
+class _HandTapHintState extends State<_HandTapHint>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _translateY;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 650),
+    )..repeat(reverse: true);
+
+    // Bounces 10 px downward to "point" at the mic below.
+    _translateY = Tween<double>(begin: 0, end: 10).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+    // Slight scale-down on the downstroke to mimic a press motion.
+    _scale = Tween<double>(begin: 1.0, end: 0.88).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeIn),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _translateY.value),
+          child: Transform.scale(
+            scale: _scale.value,
+            child: child,
+          ),
+        );
+      },
+      child: const Text('👇', style: TextStyle(fontSize: 34)),
+    );
+  }
+}
+
+// ─── Mic toggle button ────────────────────────────────────────────────────────
+//
+// Circular button that pulses green while recording.
+
+class _MicButton extends StatefulWidget {
+  final bool isActive;
+
+  const _MicButton({required this.isActive});
+
+  @override
+  State<_MicButton> createState() => _MicButtonState();
+}
+
+class _MicButtonState extends State<_MicButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _pulse = Tween<double>(begin: 1.0, end: 1.18).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+    if (widget.isActive) _ctrl.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(_MicButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      _ctrl.repeat(reverse: true);
+    } else if (!widget.isActive && oldWidget.isActive) {
+      _ctrl.stop();
+      _ctrl.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _pulse,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: widget.isActive ? _pulse.value : 1.0,
+          child: child,
+        );
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: widget.isActive
+              ? const Color(0xFF34A853)
+              : Colors.white,
+          border: Border.all(
+            color: widget.isActive
+                ? const Color(0xFF57C97A)
+                : const Color(0xFFCCA7DA),
+            width: 4,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: widget.isActive
+                  ? const Color(0xFF34A853).withAlpha(100)
+                  : Colors.black.withAlpha(25),
+              blurRadius: widget.isActive ? 22 : 8,
+              spreadRadius: widget.isActive ? 4 : 0,
+            ),
+          ],
+        ),
+        child: Icon(
+          widget.isActive ? Icons.mic : Icons.mic_none,
+          color: widget.isActive
+              ? Colors.white
+              : const Color(0xFFCCA7DA),
+          size: 34,
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Background ───────────────────────────────────────────────────────────────
 
 class _BackgroundImage extends StatelessWidget {
   const _BackgroundImage();
