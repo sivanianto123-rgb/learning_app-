@@ -71,7 +71,7 @@ class AccuracyBar extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        bottom: barHeight * 0.8 - 2,
+                        bottom: barHeight * 0.62 - 2,
                         left: 0,
                         right: 0,
                         child: Container(
@@ -80,10 +80,10 @@ class AccuracyBar extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        bottom: barHeight * 0.8 - 12,
+                        bottom: barHeight * 0.62 - 12,
                         right: -25,
                         child: Text(
-                          '80%',
+                          '62%',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -122,13 +122,13 @@ class AccuracyBar extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: accuracy >= 0.8
+              color: accuracy >= 0.62
                   ? Color(0xFF389B39)
                   : (isListening
                         ? Colors.green.withAlpha(150)
                         : Colors.grey.withAlpha(100)),
               border: Border.all(
-                color: accuracy >= 0.8 ? Color(0xFF7FD37E) : Color(0xFFCCA7DA),
+                color: accuracy >= 0.62 ? Color(0xFF7FD37E) : Color(0xFFCCA7DA),
                 width: 3,
               ),
               boxShadow: isListening
@@ -142,7 +142,7 @@ class AccuracyBar extends StatelessWidget {
                   : [],
             ),
             child: Icon(
-              accuracy >= 0.8 ? Icons.check : Icons.mic,
+              accuracy >= 0.62 ? Icons.check : Icons.mic,
               color: Colors.white,
               size: 22,
             ),
@@ -153,9 +153,9 @@ class AccuracyBar extends StatelessWidget {
   }
 
   Color _getColor() {
-    if (accuracy >= 0.8) return Color(0xFF389B39);
-    if (accuracy >= 0.5) return Color(0xFFE6A23C);
-    if (accuracy >= 0.2) return Color(0xFFE6A23C).withAlpha(180);
+    if (accuracy >= 0.62) return Color(0xFF389B39);
+    if (accuracy >= 0.35) return Color(0xFFE6A23C);
+    if (accuracy >= 0.1) return Color(0xFFE6A23C).withAlpha(180);
     return Colors.grey;
   }
 }
