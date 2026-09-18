@@ -1,0 +1,288 @@
+name: widget_preview_scaffold
+description: Scaffolding for Flutter Widget Previews
+publish_to: none
+version: 0.0.1
+environment:
+  sdk: ^3.10.1
+dependencies:
+  flutter:
+    sdk: flutter
+  _:
+    path: ../..
+  doc_flame_examples:
+    path: ../../doc/flame/examples
+  klondike:
+    path: ../../doc/tutorials/klondike/app
+  tutorials_space_shooter:
+    path: ../../doc/tutorials/space_shooter/app
+  ember_quest:
+    path: ../../doc/tutorials/platformer/app
+  flame_behaviors:
+    path: ../../packages/flame_behaviors
+  flame_behaviors_example:
+    path: ../../packages/flame_behaviors/example
+  flame_behavior_tree:
+    path: ../../packages/flame_behavior_tree
+  behavior_tree:
+    path: ../../packages/flame_behavior_tree/behavior_tree
+  flame_behavior_tree_example:
+    path: ../../packages/flame_behavior_tree/example
+  flame_test:
+    path: ../../packages/flame_test
+  flame_test_example:
+    path: ../../packages/flame_test/example
+  flame_tiled:
+    path: ../../packages/flame_tiled
+  flame_tiled_example:
+    path: ../../packages/flame_tiled/example
+  flame_oxygen:
+    path: ../../packages/flame_oxygen
+  flame_oxygen_example:
+    path: ../../packages/flame_oxygen/example
+  flame_isolate:
+    path: ../../packages/flame_isolate
+  flame_isolate_example:
+    path: ../../packages/flame_isolate/example
+  flame_texturepacker:
+    path: ../../packages/flame_texturepacker
+  flame_texturepacker_example:
+    path: ../../packages/flame_texturepacker/example
+  flame_lint:
+    path: ../../packages/flame_lint
+  flame_sprite_fusion:
+    path: ../../packages/flame_sprite_fusion
+  flame_sprite_fusion_example:
+    path: ../../packages/flame_sprite_fusion/example
+  flame_steering_behaviors:
+    path: ../../packages/flame_steering_behaviors
+  flame_steering_behaviors_example:
+    path: ../../packages/flame_steering_behaviors/example
+  flame_devtools:
+    path: ../../packages/flame_devtools
+  flame_fire_atlas:
+    path: ../../packages/flame_fire_atlas
+  flame_fire_atlas_example:
+    path: ../../packages/flame_fire_atlas/example
+  flame_audio:
+    path: ../../packages/flame_audio
+  flame_audio_example:
+    path: ../../packages/flame_audio/example
+  flame_studio:
+    path: ../../packages/flame_studio
+  flame_spine:
+    path: ../../packages/flame_spine
+  flame_spine_example:
+    path: ../../packages/flame_spine/example
+  flame_splash_screen:
+    path: ../../packages/flame_splash_screen
+  flame_splash_screen_example:
+    path: ../../packages/flame_splash_screen/example
+  flame_bloc:
+    path: ../../packages/flame_bloc
+  flame_bloc_example:
+    path: ../../packages/flame_bloc/example
+  flame_kenney_xml:
+    path: ../../packages/flame_kenney_xml
+  flame_kenney_xml_example:
+    path: ../../packages/flame_kenney_xml/example
+  flame:
+    path: ../../packages/flame
+  flame_example:
+    path: ../../packages/flame/example
+  flame_lottie:
+    path: ../../packages/flame_lottie
+  flame_lottie_example:
+    path: ../../packages/flame_lottie/example
+  flame_markdown:
+    path: ../../packages/flame_markdown
+  flame_markdown_example:
+    path: ../../packages/flame_markdown/example
+  flame_console:
+    path: ../../packages/flame_console
+  flame_console_example:
+    path: ../../packages/flame_console/example
+  flame_rive:
+    path: ../../packages/flame_rive
+  flame_rive_example:
+    path: ../../packages/flame_rive/example
+  flame_forge2d:
+    path: ../../packages/flame_forge2d
+  flame_forge2d_example:
+    path: ../../packages/flame_forge2d/example
+  flame_noise:
+    path: ../../packages/flame_noise
+  flame_riverpod:
+    path: ../../packages/flame_riverpod
+  flame_riverpod_example:
+    path: ../../packages/flame_riverpod/example
+  flame_svg:
+    path: ../../packages/flame_svg
+  flame_svg_example:
+    path: ../../packages/flame_svg/example
+  flame_network_assets:
+    path: ../../packages/flame_network_assets
+  flame_network_assets_example:
+    path: ../../packages/flame_network_assets/example
+  flame_3d:
+    path: ../../packages/flame_3d
+  flame_3d_example:
+    path: ../../packages/flame_3d/example
+  flame_jenny:
+    path: ../../packages/flame_jenny
+  jenny:
+    path: ../../packages/flame_jenny/jenny
+  trex_game:
+    path: ../../examples/games/trex
+  padracing:
+    path: ../../examples/games/padracing
+  rogue_shooter:
+    path: ../../examples/games/rogue_shooter
+  crystal_ball:
+    path: ../../examples/games/crystal_ball
+  examples:
+    path: ../../examples
+  dtd: ^2.5.1
+  flutter_lints: ^6.0.0
+  google_fonts: ^6.3.3
+  json_rpc_2: ^3.0.3
+  path: ^1.9.1
+  stack_trace: ^1.12.1
+  url_launcher: ^6.3.2
+  web: ^1.1.1
+flutter:
+  uses-material-design: true
+dependency_overrides:
+  _:
+    path: ../..
+  behavior_tree:
+    path: ../../packages/flame_behavior_tree/behavior_tree
+  crystal_ball:
+    path: ../../examples/games/crystal_ball
+  doc_flame_examples:
+    path: ../../doc/flame/examples
+  ember_quest:
+    path: ../../doc/tutorials/platformer/app
+  examples:
+    path: ../../examples
+  flame:
+    path: ../../packages/flame
+  flame_3d:
+    path: ../../packages/flame_3d
+  flame_3d_example:
+    path: ../../packages/flame_3d/example
+  flame_audio:
+    path: ../../packages/flame_audio
+  flame_audio_example:
+    path: ../../packages/flame_audio/example
+  flame_behavior_tree:
+    path: ../../packages/flame_behavior_tree
+  flame_behavior_tree_example:
+    path: ../../packages/flame_behavior_tree/example
+  flame_behaviors:
+    path: ../../packages/flame_behaviors
+  flame_behaviors_example:
+    path: ../../packages/flame_behaviors/example
+  flame_bloc:
+    path: ../../packages/flame_bloc
+  flame_bloc_example:
+    path: ../../packages/flame_bloc/example
+  flame_console:
+    path: ../../packages/flame_console
+  flame_console_example:
+    path: ../../packages/flame_console/example
+  flame_devtools:
+    path: ../../packages/flame_devtools
+  flame_example:
+    path: ../../packages/flame/example
+  flame_fire_atlas:
+    path: ../../packages/flame_fire_atlas
+  flame_fire_atlas_example:
+    path: ../../packages/flame_fire_atlas/example
+  flame_forge2d:
+    path: ../../packages/flame_forge2d
+  flame_forge2d_example:
+    path: ../../packages/flame_forge2d/example
+  flame_isolate:
+    path: ../../packages/flame_isolate
+  flame_isolate_example:
+    path: ../../packages/flame_isolate/example
+  flame_jenny:
+    path: ../../packages/flame_jenny
+  flame_kenney_xml:
+    path: ../../packages/flame_kenney_xml
+  flame_kenney_xml_example:
+    path: ../../packages/flame_kenney_xml/example
+  flame_lint:
+    path: ../../packages/flame_lint
+  flame_lottie:
+    path: ../../packages/flame_lottie
+  flame_lottie_example:
+    path: ../../packages/flame_lottie/example
+  flame_markdown:
+    path: ../../packages/flame_markdown
+  flame_markdown_example:
+    path: ../../packages/flame_markdown/example
+  flame_network_assets:
+    path: ../../packages/flame_network_assets
+  flame_network_assets_example:
+    path: ../../packages/flame_network_assets/example
+  flame_noise:
+    path: ../../packages/flame_noise
+  flame_oxygen:
+    path: ../../packages/flame_oxygen
+  flame_oxygen_example:
+    path: ../../packages/flame_oxygen/example
+  flame_rive:
+    path: ../../packages/flame_rive
+  flame_rive_example:
+    path: ../../packages/flame_rive/example
+  flame_riverpod:
+    path: ../../packages/flame_riverpod
+  flame_riverpod_example:
+    path: ../../packages/flame_riverpod/example
+  flame_spine:
+    path: ../../packages/flame_spine
+  flame_spine_example:
+    path: ../../packages/flame_spine/example
+  flame_splash_screen:
+    path: ../../packages/flame_splash_screen
+  flame_splash_screen_example:
+    path: ../../packages/flame_splash_screen/example
+  flame_sprite_fusion:
+    path: ../../packages/flame_sprite_fusion
+  flame_sprite_fusion_example:
+    path: ../../packages/flame_sprite_fusion/example
+  flame_steering_behaviors:
+    path: ../../packages/flame_steering_behaviors
+  flame_steering_behaviors_example:
+    path: ../../packages/flame_steering_behaviors/example
+  flame_studio:
+    path: ../../packages/flame_studio
+  flame_svg:
+    path: ../../packages/flame_svg
+  flame_svg_example:
+    path: ../../packages/flame_svg/example
+  flame_test:
+    path: ../../packages/flame_test
+  flame_test_example:
+    path: ../../packages/flame_test/example
+  flame_texturepacker:
+    path: ../../packages/flame_texturepacker
+  flame_texturepacker_example:
+    path: ../../packages/flame_texturepacker/example
+  flame_tiled:
+    path: ../../packages/flame_tiled
+  flame_tiled_example:
+    path: ../../packages/flame_tiled/example
+  jenny:
+    path: ../../packages/flame_jenny/jenny
+  klondike:
+    path: ../../doc/tutorials/klondike/app
+  padracing:
+    path: ../../examples/games/padracing
+  rogue_shooter:
+    path: ../../examples/games/rogue_shooter
+  trex_game:
+    path: ../../examples/games/trex
+  tutorials_space_shooter:
+    path: ../../doc/tutorials/space_shooter/app
